@@ -1,4 +1,5 @@
 const {TwitterApi} = require('twitter-api-v2');
+const http = require('https');
 const userSearchList = '"#crypto" (-is:retweet from:Bitboy_Crypto OR from:WatcherGuru OR from:aantonop OR from:APompliano OR from:ErikVoorhees OR from:VitalikButerin OR from:IvanOnTech OR from:MessariCrypto OR from:TheCryptoDog OR from:PaikCapital OR from:girlgone_crypto OR from:KennethBosak OR from:CryptoDiffer OR from:CryptoWendyO OR from:cz_binance OR from:ethereumJoseph OR from:ASvanevik OR from:lopp OR from:AltcoinGordon)';
 const userIdList = ['954005112174862336', '1387497871751196672', '1469101279', '339061487', '61417559', '295218901', '390627208', '412587524', '887748030304329728', '1220850904351399936', '1150790822813560833', '4693571508', '963815487481303040', '935742315389444096', '902926941413453824', '2362854624', '42584365', '23618940', '1354400126857605121'];
 const tags = ['#Crypto', '#Altcoins', '#Cryptocurrency', '#CryptoExchange', '#Ethereum', '#Bitcoin', '@Bitcoin', '@Ethereum', '@Binance', '@SBF_FTX', '@Bitboy_Crypto', '@kucoincom', '$ETH', '$BTC', '#DOGE', '$DOGE', '@cz_binance', '@VitalikButerin'];
@@ -9,7 +10,43 @@ const derekUserId = '721093933384777728';
 const labsUserId = '1502432568204947459';
 const honeypotUserId = '1368376334594961409';
 
-let jsonData = require('/home/botcontroller1/twitterBotController/credentials.json');
+var jsonData;
+var mainIntArray = [];
+
+let req = http.get("https://bot.uniqued.io/credentials.json", function(res) {
+	let data = '',
+		json_data;
+
+	res.on('data', function(stream) {
+		data += stream;
+	});
+	res.on('end', function() {
+		json_data = JSON.parse(data);
+
+		// will output a Javascript object
+		//console.log(json_data);
+                jsonData = json_data;
+                for (let i = 0; i < 5; i++) {
+                    let randInt = getRandomInt(jsonData.length);
+                   // if(i == 0) {
+                   //     mainIntArray.push(randInt);
+                   // } else if(mainIntArray.includes(randInt)) {
+                    if(mainIntArray.includes(randInt)) {
+                        //randInt = getRandomInt(jsonData.length);
+                        i--;
+                    } else {
+                        mainIntArray.push(randInt);
+                        if(i >= 4) {
+                            initializeBot(0);
+                        }
+                    }
+                }
+	});
+});
+
+req.on('error', function(e) {
+    console.log(e.message);
+});
 
 function getRandomInt(max) {
   return Math.floor(Math.random() * max);
@@ -44,7 +81,7 @@ function retweetUser(userData, user) {
     client.v2.me(
     ).then((userID) => {
         console.log('Bot Initialized - ID: ' + userID.data.id + ' Name: ' + userID.data.name + ' Username: ' + userID.data.username);
-        let boolFlagInt = getRandomInt(100);
+        let boolFlagInt = getRandomInt(250);
         if(boolFlagInt < 30) {
             client.v2.search(userSearchList, {
                 'media.fields': 'url',
@@ -74,7 +111,7 @@ function retweetUser(userData, user) {
             })
         }
         let boolFlagInt4 = getRandomInt(100);
-        if(boolFlagInt4 < 50) {
+        if(boolFlagInt4 < 40) {
             followerAdd(client, userIdList[getRandomInt(userIdList.length)]);
         }
     }).catch((err) => {
@@ -148,7 +185,7 @@ function initializeBot(userIndex) {
     //let timeout3 = getRandomIntBetween(8000, 30000);
     let timeout4 = getRandomIntBetween(8000, 30000);
     setTimeout(() => {
-        retweetUser(jsonData[userIndex], ICXUserId);
+        retweetUser(jsonData[mainIntArray[userIndex]], ICXUserId);
         //if(boolFlag) {retweetUser(jsonData[userIndex], ICXUserId);}
 /*        setTimeout(() => {
             console.log("Delayed for " + (timeout1/1000) + " seconds.");
@@ -160,7 +197,7 @@ function initializeBot(userIndex) {
                     console.log("Delayed for " + (timeout3/1000) + " seconds.");
                     //if(boolFlag) {retweetUser(jsonData[userIndex], honeypotUserId);}*/
                     userIndex++;
-                    if(userIndex < jsonData.length) {
+                    if(userIndex < mainIntArray.length) {
                         initializeBot(userIndex);
                     }
                 //}, timeout1)
@@ -168,5 +205,5 @@ function initializeBot(userIndex) {
         //}, timeout3)*/
     }, timeout4)
 }
-initializeBot(0);
+//initializeBot(0);
 //initializeBot(1);
