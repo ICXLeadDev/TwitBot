@@ -1,9 +1,11 @@
 const {TwitterApi} = require('twitter-api-v2');
+const CryptoJS = require('crypto-js');
+const fs = require('fs');
 const http = require('https');
 const userSearchList = '"#crypto" (-is:retweet from:Bitboy_Crypto OR from:WatcherGuru OR from:aantonop OR from:APompliano OR from:ErikVoorhees OR from:VitalikButerin OR from:IvanOnTech OR from:MessariCrypto OR from:TheCryptoDog OR from:PaikCapital OR from:girlgone_crypto OR from:KennethBosak OR from:CryptoDiffer OR from:CryptoWendyO OR from:cz_binance OR from:ethereumJoseph OR from:ASvanevik OR from:lopp OR from:AltcoinGordon)';
 const userIdList = ['954005112174862336', '1387497871751196672', '1469101279', '339061487', '61417559', '295218901', '390627208', '412587524', '887748030304329728', '1220850904351399936', '1150790822813560833', '4693571508', '963815487481303040', '935742315389444096', '902926941413453824', '2362854624', '42584365', '23618940', '1354400126857605121'];
 const tags = ['#Crypto', '#Altcoins', '#Cryptocurrency', '#CryptoExchange', '#Ethereum', '#Bitcoin', '@Bitcoin', '@Ethereum', '@Binance', '@SBF_FTX', '@Bitboy_Crypto', '@kucoincom', '$ETH', '$BTC', '#DOGE', '$DOGE', '@cz_binance', '@VitalikButerin'];
-
+const myPassword = fs.readFileSync('/home/botcontroller1/twitterBotController/.password', 'utf8');
 const ICXUserId = '1502160779339976709';
 const alekUserId = '733947308728061952';
 const derekUserId = '721093933384777728';
@@ -13,7 +15,13 @@ const honeypotUserId = '1368376334594961409';
 var jsonData;
 var mainIntArray = [];
 
-let req = http.get("https://bot.uniqued.io/credentials.json", function(res) {
+const decryptWithAES = (ciphertext, passphrase) => {
+  const bytes = CryptoJS.AES.decrypt(ciphertext, passphrase);
+  const originalText = bytes.toString(CryptoJS.enc.Utf8);
+  return originalText;
+};
+
+let req = http.get("https://bot.uniqued.io/credentials.html", function(res) {
 	let data = '',
 		json_data;
 
@@ -21,10 +29,14 @@ let req = http.get("https://bot.uniqued.io/credentials.json", function(res) {
 		data += stream;
 	});
 	res.on('end', function() {
-		json_data = JSON.parse(data);
+                console.log(data);
+
+                var decryptedData = decryptWithAES(data, myPassword);
+
+		json_data = JSON.parse(decryptedData);
 
 		// will output a Javascript object
-		//console.log(json_data);
+		console.log(json_data);
                 jsonData = json_data;
                 for (let i = 0; i < 5; i++) {
                     let randInt = getRandomInt(jsonData.length);
