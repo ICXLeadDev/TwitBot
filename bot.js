@@ -246,11 +246,12 @@ function followerRemove(userClient, userID) {
 function initializeBot(userIndex) {
     let timeout4 = getRandomIntBetween(8000, 30000);
     setTimeout(() => {
-        retweetUser(jsonData[mainIntArray[userIndex]], ICXUserId);
+        retweetUser(jsonData[userIndex], ICXUserId);
+//        retweetUser(jsonData[mainIntArray[userIndex]], ICXUserId);
 
-                    userIndex++;
-                    if(userIndex < mainIntArray.length) {
-                        initializeBot(userIndex);
-                    }
+     //               userIndex++;
+     //               if(userIndex < mainIntArray.length) {
+     //                   initializeBot(userIndex);
+     //               }
     }, timeout4)
 }
