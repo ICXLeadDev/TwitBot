@@ -5,7 +5,7 @@ const http = require('https');
 var userSearchList;
 var userIdList = [];
 var tags = [];
-const myPassword = fs.readFileSync('/home/botcontroller1/twitterBotController/.password', 'utf8');
+const myPassword = fs.readFileSync('/home/botcontroller1/TwitBot/.password', 'utf8');
 const ICXUserId = '1502160779339976709';
 const alekUserId = '733947308728061952';
 const derekUserId = '721093933384777728';
@@ -92,30 +92,11 @@ function startProgram() {
 		data += stream;
 	});
 	res.on('end', function() {
-                console.log(data);
-
                 var decryptedData = decryptWithAES(data, myPassword);
-
 		json_data = JSON.parse(decryptedData);
-
-		// will output a Javascript object
-		console.log(json_data);
                 jsonData = json_data;
-                for (let i = 0; i < 5; i++) {
-                    let randInt = getRandomInt(jsonData.length);
-                   // if(i == 0) {
-                   //     mainIntArray.push(randInt);
-                   // } else if(mainIntArray.includes(randInt)) {
-                    if(mainIntArray.includes(randInt)) {
-                        //randInt = getRandomInt(jsonData.length);
-                        i--;
-                    } else {
-                        mainIntArray.push(randInt);
-                        if(i >= 4) {
-                            initializeBot(0);
-                        }
-                    }
-                }
+                let randInt = getRandomInt(jsonData.length);
+                initializeBot(randInt);
 	});
 });
 req.on('error', function(e) {
@@ -177,11 +158,12 @@ function retweetUser(userData, user) {
                 tweetSend += ' ' + tweetString;
                 let boolFlagInt2 = getRandomInt(50);
                 if(boolFlagInt2 < 10) {tweetSend += ' @ICXTrading';}
-                else if(boolFlagInt2 >= 10 && boolFlagInt2 < 20) {tweetSend += ' @HoneypotLabs';}
+                else if(boolFlagInt2 >= 10 && boolFlagInt2 < 20) {tweetSend += ' @AngelsOfCrypto';}
                 else if(boolFlagInt2 >= 20 && boolFlagInt2 < 30) {tweetSend += ' @RefugeLabs';}
                 console.log('Sending Tweet - Tweet Text: ' + tweetSend);
                 client.v2.tweet(tweetSend);
             }).catch((err) => {
+                fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userData.appKey + '\n');
                 console.log(err)
             })
         }
@@ -189,16 +171,27 @@ function retweetUser(userData, user) {
         if(boolFlagInt4 < 40) {
             followerAdd(client, userIdList[getRandomInt(userIdList.length)]);
         }
+        if(boolFlagInt4 > 95) {
+            client.v2.userTimeline(honeypotUserId, {
+            }).then((val) => {
+                let boolFlagInt5 = getRandomInt(3);
+                client.v2.retweet(userID.data.id, val._realData.data[boolFlagInt5].id)
+                client.v2.like(userID.data.id, val._realData.data[boolFlagInt5].id)
+            }).catch((err) => {
+               fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userData.appKey + '\n');
+                console.log(err)
+            })
+        }
     }).catch((err) => {
+        fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userData.appKey + '\n');
         console.log(err)
     })
 }
-
 function followerAdd(userClient, user) {
     userClient.v2.followers(user
     ).then((val) => {
         //console.log(val);
-        let randomArraySize = getRandomIntBetween(2, 5);
+        let randomArraySize = getRandomIntBetween(2, 10);
         var userIdArray = [];
         for (let i = 0; i < randomArraySize; i++) {
             let nextId = val.data[getRandomInt(val.data.length)].id;
@@ -221,6 +214,7 @@ function followerAdd(userClient, user) {
             }
         }
     }).catch((err) => {
+        fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userClient._requestMaker.consumerToken + '\n');
         console.log(err)
     })
 }
@@ -228,7 +222,7 @@ function followerAdd(userClient, user) {
 function followerRemove(userClient, userID) {
     userClient.v2.followers(userID
     ).then((val) => {
-        let randomArraySize = getRandomIntBetween(2, 5);
+        let randomArraySize = getRandomIntBetween(2, 9);
         var userIdArray = [];
         for (let i = 0; i < randomArraySize; i++) {
             let nextId = val.data[getRandomInt(val.data.length)].id;
@@ -245,6 +239,7 @@ function followerRemove(userClient, userID) {
             }
         }
     }).catch((err) => {
+        fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userClient._requestMaker.consumerToken + '\n');
         console.log(err)
     })
 }
