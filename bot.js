@@ -206,6 +206,24 @@ function followerAdd(userClient, user) {
                     userClient.v2.me(
                     ).then((userID) => {
                         userClient.v2.follow(userID.data.id, element);
+                        let randFlag = getRandomInt(100);
+                        if(randFlag > 50) {
+                            userClient.v2.userTimeline(element, {
+                            }).then((timelineVal) => {
+                                if(timelineVal._realData.data.length > 0) {
+                                    userClient.v2.like(userID.data.id, timelineVal._realData.data[0].id)
+                                    .then((likeVal) => {
+                                        console.log('Tweet Liked Successfully!');
+                                    }).catch((err) => {
+                                        console.log(err)
+                                    })
+                                }else{
+                                    console.log('No Tweets Found To Like');
+                                }
+                            }).catch((err) => {
+                                console.log(err)
+                            })
+                        }
                         if(index == array.length - 1) {
                             followerRemove(userClient, userID.data.id);
                         }
