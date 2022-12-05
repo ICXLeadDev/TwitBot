@@ -1,3 +1,6 @@
+const { Client } = require("pg");
+const date = require('date-and-time');
+
 const {TwitterApi} = require('twitter-api-v2');
 const CryptoJS = require('crypto-js');
 const fs = require('fs');
@@ -6,6 +9,7 @@ var userSearchList;
 var userIdList = [];
 var tags = [];
 const myPassword = fs.readFileSync('/home/botcontroller1/TwitBot/.password', 'utf8');
+const databaseUrl = fs.readFileSync('/home/botcontroller1/TwitBot/.databaseurl', 'utf8');
 const ICXUserId = '1502160779339976709';
 const alekUserId = '733947308728061952';
 const derekUserId = '721093933384777728';
@@ -162,7 +166,9 @@ function retweetUser(userData, user) {
                 else if(boolFlagInt2 >= 20 && boolFlagInt2 < 30) {tweetSend += ' @RefugeLabs';}
                 console.log('Sending Tweet - Tweet Text: ' + tweetSend);
                 client.v2.tweet(tweetSend);
+                updateDatabase(userData.appKey, true);
             }).catch((err) => {
+                updateDatabase(userData.appKey, false);
                 fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userData.appKey + '\n');
                 console.log(err)
             })
@@ -177,12 +183,15 @@ function retweetUser(userData, user) {
                 let boolFlagInt5 = getRandomInt(3);
                 client.v2.retweet(userID.data.id, val._realData.data[boolFlagInt5].id)
                 client.v2.like(userID.data.id, val._realData.data[boolFlagInt5].id)
+                updateDatabase(userClient._requestMaker.consumerToken, true);
             }).catch((err) => {
+               updateDatabase(userData.appKey, false);
                fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userData.appKey + '\n');
                 console.log(err)
             })
         }
     }).catch((err) => {
+        updateDatabase(userData.appKey, false);
         fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userData.appKey + '\n');
         console.log(err)
     })
@@ -232,6 +241,7 @@ function followerAdd(userClient, user) {
             }
         }
     }).catch((err) => {
+        updateDatabase(userClient._requestMaker.consumerToken, false);
         fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userClient._requestMaker.consumerToken + '\n');
         console.log(err)
     })
@@ -253,10 +263,14 @@ function followerRemove(userClient, userID) {
                 userIdArray.forEach(function (element, index, array) {
                     console.log('Removing Follower - ' + element);
                     userClient.v2.unfollow(userID, element);
+                    if(index == array.length - 1) {
+                        updateDatabase(userClient._requestMaker.consumerToken, true);
+                    }
                 });
             }
         }
     }).catch((err) => {
+        updateDatabase(userClient._requestMaker.consumerToken, false);
         fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userClient._requestMaker.consumerToken + '\n');
         console.log(err)
     })
@@ -265,11 +279,36 @@ function initializeBot(userIndex) {
     let timeout4 = getRandomIntBetween(8000, 30000);
     setTimeout(() => {
         retweetUser(jsonData[userIndex], ICXUserId);
-//        retweetUser(jsonData[mainIntArray[userIndex]], ICXUserId);
-
-     //               userIndex++;
-     //               if(userIndex < mainIntArray.length) {
-     //                   initializeBot(userIndex);
-     //               }
     }, timeout4)
+}
+async function updateDatabase(apiKey, isActive) {
+  const client = new Client({
+    connectionString: databaseUrl,
+    application_name: "TwitBot"
+  });
+
+  try {
+    await client.connect();
+    let statement = "CREATE TABLE IF NOT EXISTS account_tracking (apikey STRING, active BOOL, timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
+    let result = await client.query(statement);
+    statement = "SELECT * FROM account_tracking WHERE apikey = '" + apiKey + "'";
+    result = await client.query(statement);
+    if (result.rowCount > 0) {
+        statement = "UPDATE account_tracking SET active = " + isActive + " WHERE apikey = '" + apiKey + "'";
+        result = await client.query(statement);
+    } else {
+        statement = "INSERT INTO account_tracking (active, apikey) VALUES (" + isActive + ", '" + apiKey + "')";
+        result = await client.query(statement);
+    }
+    /*statement = "SELECT * FROM account_tracking"
+    result = await client.query(statement);
+    if (result.rowCount > 0) {
+        for(let i = 0; i < result.rows.length; i++) {
+           console.log('API Key: ' + result.rows[i].apikey + ' Active: ' + result.rows[i].active + ' Timestamp: ' + date.format(result.rows[i].timestamp,'DD/MM/YYYY HH:mm:ss'));
+        }
+    }*/
+    await client.end();
+  } catch (err) {
+    console.log(`error connecting: ${err}`);
+  }
 }
