@@ -216,7 +216,7 @@ function followerAdd(userClient, user) {
                     ).then((userID) => {
                         userClient.v2.follow(userID.data.id, element);
                         let randFlag = getRandomInt(100);
-                        if(randFlag > 50) {
+                        if(randFlag > 20) {
                             userClient.v2.userTimeline(element, {
                             }).then((timelineVal) => {
                                 if(timelineVal._realData.data.length > 0) {
@@ -250,7 +250,11 @@ function followerAdd(userClient, user) {
 function followerRemove(userClient, userID) {
     userClient.v2.followers(userID
     ).then((val) => {
-        let randomArraySize = getRandomIntBetween(2, 9);
+        let upperBound = 9;
+        if(val.data.length > 4000) {
+            upperBount = 13
+        }
+        let randomArraySize = getRandomIntBetween(2, upperBound);
         var userIdArray = [];
         for (let i = 0; i < randomArraySize; i++) {
             let nextId = val.data[getRandomInt(val.data.length)].id;
