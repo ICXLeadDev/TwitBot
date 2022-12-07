@@ -15,6 +15,7 @@ const alekUserId = '733947308728061952';
 const derekUserId = '721093933384777728';
 const labsUserId = '1502432568204947459';
 const honeypotUserId = '1368376334594961409';
+const brazillianAngelUserId = '1561904804053393408';
 
 var jsonData;
 var mainIntArray = [];
@@ -164,6 +165,7 @@ function retweetUser(userData, user) {
                 if(boolFlagInt2 < 10) {tweetSend += ' @ICXTrading';}
                 else if(boolFlagInt2 >= 10 && boolFlagInt2 < 20) {tweetSend += ' @AngelsOfCrypto';}
                 else if(boolFlagInt2 >= 20 && boolFlagInt2 < 30) {tweetSend += ' @RefugeLabs';}
+                else if(boolFlagInt2 >= 40) {tweetSend += ' @BrazillianAngel';}
                 console.log('Sending Tweet - Tweet Text: ' + tweetSend);
                 client.v2.tweet(tweetSend);
                 updateDatabase(userData.appKey, true);
@@ -174,6 +176,7 @@ function retweetUser(userData, user) {
             })
         }
         let boolFlagInt4 = getRandomInt(100);
+        let boolFlagInt10 = getRandomInt(100);
         if(boolFlagInt4 < 40) {
             followerAdd(client, userIdList[getRandomInt(userIdList.length)]);
         }
@@ -183,7 +186,20 @@ function retweetUser(userData, user) {
                 let boolFlagInt5 = getRandomInt(3);
                 client.v2.retweet(userID.data.id, val._realData.data[boolFlagInt5].id)
                 client.v2.like(userID.data.id, val._realData.data[boolFlagInt5].id)
-                updateDatabase(userClient._requestMaker.consumerToken, true);
+                updateDatabase(userData.appKey, true);
+            }).catch((err) => {
+               updateDatabase(userData.appKey, false);
+               fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userData.appKey + '\n');
+                console.log(err)
+            })
+        }
+        else if(boolFlagInt10 > 50) {
+            client.v2.userTimeline(brazillianAngelUserId, {
+            }).then((val) => {
+                let boolFlagInt11 = getRandomInt(5);
+                client.v2.retweet(userID.data.id, val._realData.data[boolFlagInt11].id)
+                client.v2.like(userID.data.id, val._realData.data[boolFlagInt11].id)
+                updateDatabase(userData.appKey, true);
             }).catch((err) => {
                updateDatabase(userData.appKey, false);
                fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userData.appKey + '\n');
