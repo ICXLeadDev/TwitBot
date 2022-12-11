@@ -165,7 +165,7 @@ function retweetUser(userData, user) {
                 if(boolFlagInt2 < 10) {tweetSend += ' @ICXTrading';}
                 else if(boolFlagInt2 >= 10 && boolFlagInt2 < 20) {tweetSend += ' @AngelsOfCrypto';}
                 else if(boolFlagInt2 >= 20 && boolFlagInt2 < 30) {tweetSend += ' @RefugeLabs';}
-                else if(boolFlagInt2 >= 40) {tweetSend += ' @BrazillianAngel';}
+                else if(boolFlagInt2 >= 40) {tweetSend += ' @AngelsOfCrypto';}
                 console.log('Sending Tweet - Tweet Text: ' + tweetSend);
                 client.v2.tweet(tweetSend);
                 updateDatabase(userData.appKey, true);
@@ -180,7 +180,7 @@ function retweetUser(userData, user) {
         if(boolFlagInt4 < 40) {
             followerAdd(client, userIdList[getRandomInt(userIdList.length)]);
         }
-        if(boolFlagInt4 > 95) {
+        if(boolFlagInt4 > 60) {
             client.v2.userTimeline(honeypotUserId, {
             }).then((val) => {
                 let boolFlagInt5 = getRandomInt(3);
@@ -193,7 +193,7 @@ function retweetUser(userData, user) {
                 console.log(err)
             })
         }
-        else if(boolFlagInt10 > 50) {
+        /*else if(boolFlagInt10 > 50) {
             client.v2.userTimeline(brazillianAngelUserId, {
             }).then((val) => {
                 let boolFlagInt11 = getRandomInt(5);
@@ -205,7 +205,7 @@ function retweetUser(userData, user) {
                fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userData.appKey + '\n');
                 console.log(err)
             })
-        }
+        }*/
     }).catch((err) => {
         updateDatabase(userData.appKey, false);
         fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userData.appKey + '\n');
