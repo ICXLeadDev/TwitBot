@@ -177,10 +177,12 @@ function retweetUser(userData, user) {
         }
         let boolFlagInt4 = getRandomInt(100);
         let boolFlagInt10 = getRandomInt(100);
-        if(boolFlagInt4 < 40) {
-            followerAdd(client, userIdList[getRandomInt(userIdList.length)]);
+        if(boolFlagInt4 < 80) {
+            console.log('Starting follower wash...');
+            followerWash(client, userID.data.id, userIdList[getRandomInt(userIdList.length)]);
         }
-        if(boolFlagInt4 > 60) {
+        if(boolFlagInt4 > 30) {
+            console.log('Starting retweet/like wash...');
             client.v2.userTimeline(honeypotUserId, {
             }).then((val) => {
                 let boolFlagInt5 = getRandomInt(3);
@@ -212,88 +214,82 @@ function retweetUser(userData, user) {
         console.log(err)
     })
 }
-function followerAdd(userClient, user) {
-    userClient.v2.followers(user
-    ).then((val) => {
-        //console.log(val);
-        let randomArraySize = getRandomIntBetween(2, 10);
-        var userIdArray = [];
-        for (let i = 0; i < randomArraySize; i++) {
-            let nextId = val.data[getRandomInt(val.data.length)].id;
-            if(!userIdArray.includes(nextId)) {
-                userIdArray.push(nextId);
-            } else {
-                i--;
-            }
-            if(i == randomArraySize - 1) {
-                userIdArray.forEach(function (element, index, array) {
-                    console.log('Adding Follower - ' + element);
-                    userClient.v2.me(
-                    ).then((userID) => {
-                        userClient.v2.follow(userID.data.id, element);
-                        let randFlag = getRandomInt(100);
-                        if(randFlag > 20) {
-                            userClient.v2.userTimeline(element, {
-                            }).then((timelineVal) => {
-                                if(timelineVal._realData.data.length > 0) {
-                                    userClient.v2.like(userID.data.id, timelineVal._realData.data[0].id)
-                                    .then((likeVal) => {
-                                        console.log('Tweet Liked Successfully!');
-                                    }).catch((err) => {
-                                        console.log(err)
-                                    })
-                                }else{
-                                    console.log('No Tweets Found To Like');
-                                }
-                            }).catch((err) => {
-                                console.log(err)
-                            })
-                        }
-                        if(index == array.length - 1) {
-                            followerRemove(userClient, userID.data.id);
-                        }
-                    });
-                });
-            }
+async function followerWash(client, ownUserId, otherUserId) {
+    try{
+    let randomInt = getRandomInt(100);
+    if(randomInt > 60) {
+        var otherFollowersArray = [];
+        let otherData = await client.v2.user(otherUserId, {'user.fields': 'public_metrics'});
+        let upperLimit = 7;
+        if(Math.floor(otherData.data.public_metrics.following_count / 1000) < upperLimit) {
+            upperLimit = Math.floor(otherData.data.public_metrics.following_count / 1000);
         }
-    }).catch((err) => {
-        updateDatabase(userClient._requestMaker.consumerToken, false);
-        fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userClient._requestMaker.consumerToken + '\n');
-        console.log(err)
-    })
+        let modRandomInt = getRandomIntBetween(1, upperLimit);
+        let otherFollowers = await client.v2.followers(otherUserId, { max_results: 1000 });
+        othersFollowersArray = otherFollowers.data;
+        for(let x = 0; x < modRandomInt; x++) {
+             otherFollowers = await client.v2.followers(otherUserId, { max_results: 1000 , pagination_token: otherFollowers.meta.next_token});
+             otherFollowersArray = otherFollowersArray.concat(otherFollowers.data);
+             if(x == (modRandomInt - 1)) {addFollowers(client, ownUserId, otherUserId, otherFollowersArray);}
+        }
+    } else {
+        var ownFollowersArray = [];
+        let selfData = await client.v2.user(ownUserId, {'user.fields': 'public_metrics'});
+        let modRandomInt = getRandomIntBetween(1, Math.floor(selfData.data.public_metrics.following_count / 1000));
+        let ownFollowers = await client.v2.following(ownUserId, { max_results: 1000 });
+        ownFollowersArray = ownFollowers.data;
+        for(let x = 0; x < modRandomInt; x++) {
+             ownFollowers = await client.v2.following(ownUserId, { max_results: 1000 , pagination_token: ownFollowers.meta.next_token});
+             ownFollowersArray = ownFollowersArray.concat(ownFollowers.data);
+             if(x == (modRandomInt - 1)) {removeFollowers(client, ownUserId, ownFollowersArray);}
+        }
+    }
+    }catch(error) {
+        updateDatabase(client._requestMaker.consumerToken, false);
+        console.log(error);
+    }
 }
-
-function followerRemove(userClient, userID) {
-    userClient.v2.followers(userID
-    ).then((val) => {
-        let upperBound = 9;
-        if(val.data.length > 4000) {
-            upperBount = 13
-        }
-        let randomArraySize = getRandomIntBetween(2, upperBound);
-        var userIdArray = [];
-        for (let i = 0; i < randomArraySize; i++) {
-            let nextId = val.data[getRandomInt(val.data.length)].id;
-            if(!userIdArray.includes(nextId)) {
-                userIdArray.push(nextId);
-            } else {
+async function addFollowers(client, ownUserId, otherUserId, otherFollowersArray) {
+    try{
+        let addArray = []
+        let arraySize = getRandomIntBetween(4, 12)
+        console.log('otherFollowersArray Size: ' + otherFollowersArray.length + ' addArray Size: ' + arraySize);
+        for(let i = 0; i < arraySize; i++) {
+            let randomFollowerIndex = getRandomInt(otherFollowersArray.length)
+            if(addArray.includes(otherFollowersArray[randomFollowerIndex].id)) {
                 i--;
-            }
-            if(i == randomArraySize - 1) {
-                userIdArray.forEach(function (element, index, array) {
-                    console.log('Removing Follower - ' + element);
-                    userClient.v2.unfollow(userID, element);
-                    if(index == array.length - 1) {
-                        updateDatabase(userClient._requestMaker.consumerToken, true);
-                    }
-                });
+            } else {
+                addArray.push(otherFollowersArray[randomFollowerIndex].id);
+                let response = await client.v2.follow(ownUserId, otherFollowersArray[randomFollowerIndex].id);
+                console.log('Adding Follower - ' + otherFollowersArray[randomFollowerIndex].id);
+                console.log(response);
             }
         }
-    }).catch((err) => {
-        updateDatabase(userClient._requestMaker.consumerToken, false);
-        fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userClient._requestMaker.consumerToken + '\n');
-        console.log(err)
-    })
+    }catch(error) {
+        updateDatabase(client._requestMaker.consumerToken, false);
+        console.log(error);
+    }
+}
+async function removeFollowers(client, ownUserId, ownFollowersArray) {
+    try{
+        let removalArray = []
+        let arraySize = getRandomIntBetween(7, 14)
+        console.log('ownFollowersArray Size: ' + ownFollowersArray.length + ' removalArray Size: ' + arraySize);
+        for(let i = 0; i < arraySize; i++) {
+            let randomFollowerIndex = getRandomInt(ownFollowersArray.length)
+            if(removalArray.includes(ownFollowersArray[randomFollowerIndex].id)) {
+                i--;
+            } else {
+                removalArray.push(ownFollowersArray[randomFollowerIndex].id);
+                let response = await client.v2.unfollow(ownUserId, ownFollowersArray[randomFollowerIndex].id);
+                console.log('Removing Follower - ' + ownFollowersArray[randomFollowerIndex].id);
+                console.log(response);
+            }
+        }
+    }catch(error) {
+        updateDatabase(client._requestMaker.consumerToken, false);
+        console.log(error);
+    }
 }
 function initializeBot(userIndex) {
     let timeout4 = getRandomIntBetween(8000, 30000);
