@@ -162,7 +162,7 @@ function retweetUser(userData, user) {
                 else {tweetSend += tweetText;}
                 tweetSend += ' ' + tweetString;
                 let boolFlagInt2 = getRandomInt(50);
-                if(boolFlagInt2 < 10) {tweetSend += ' @ICXTrading';}
+                if(boolFlagInt2 < 10) {tweetSend += ' @BinomicExchange';}
                 else if(boolFlagInt2 >= 10 && boolFlagInt2 < 20) {tweetSend += ' @AngelsOfCrypto';}
                 else if(boolFlagInt2 >= 20 && boolFlagInt2 < 30) {tweetSend += ' @RefugeLabs';}
                 else if(boolFlagInt2 >= 40) {tweetSend += ' @AngelsOfCrypto';}
