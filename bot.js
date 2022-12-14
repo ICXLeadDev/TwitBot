@@ -177,7 +177,7 @@ function retweetUser(userData, user) {
         }
         let boolFlagInt4 = getRandomInt(100);
         let boolFlagInt10 = getRandomInt(100);
-        if(boolFlagInt4 < 80) {
+        if(boolFlagInt4 < 100) {
             console.log('Starting follower wash...');
             followerWash(client, userID.data.id, userIdList[getRandomInt(userIdList.length)]);
         }
@@ -195,6 +195,11 @@ function retweetUser(userData, user) {
                 console.log(err)
             })
         }
+
+        setTimeout(() => {
+            console.log("Delayed for 30 seconds");
+        }, "30000")
+
         /*else if(boolFlagInt10 > 50) {
             client.v2.userTimeline(brazillianAngelUserId, {
             }).then((val) => {
@@ -217,7 +222,8 @@ function retweetUser(userData, user) {
 async function followerWash(client, ownUserId, otherUserId) {
     try{
     let randomInt = getRandomInt(100);
-    if(randomInt > 60) {
+    if(randomInt > 50) {
+        console.log('Starting Add Followers...');
         var otherFollowersArray = [];
         let otherData = await client.v2.user(otherUserId, {'user.fields': 'public_metrics'});
         let upperLimit = 7;
@@ -226,22 +232,43 @@ async function followerWash(client, ownUserId, otherUserId) {
         }
         let modRandomInt = getRandomIntBetween(1, upperLimit);
         let otherFollowers = await client.v2.followers(otherUserId, { max_results: 1000 });
-        othersFollowersArray = otherFollowers.data;
-        for(let x = 0; x < modRandomInt; x++) {
-             otherFollowers = await client.v2.followers(otherUserId, { max_results: 1000 , pagination_token: otherFollowers.meta.next_token});
-             otherFollowersArray = otherFollowersArray.concat(otherFollowers.data);
-             if(x == (modRandomInt - 1)) {addFollowers(client, ownUserId, otherUserId, otherFollowersArray);}
+        console.log(otherFollowers);
+        console.log('Before Add Followers Loop... Upper Limit: ' + upperLimit + ' ModRandomInt: ' + modRandomInt);
+        otherFollowersArray = await otherFollowers.data;
+        console.log(otherFollowersArray);
+        if(modRandomInt == 0) {
+            addFollowers(client, ownUserId, otherUserId, otherFollowersArray);
+        } else {
+            for(let x = 0; x < modRandomInt; x++) {
+                 console.log('Starting Add Followers Loop...');
+                 otherFollowers = await client.v2.followers(otherUserId, { max_results: 1000 , pagination_token: otherFollowers.meta.next_token});
+                 otherFollowersArray = otherFollowersArray.concat(otherFollowers.data);
+                 if(x == (modRandomInt - 1)) {addFollowers(client, ownUserId, otherUserId, otherFollowersArray);}
+            }
         }
     } else {
+        console.log('Starting Remove Followers...');
         var ownFollowersArray = [];
         let selfData = await client.v2.user(ownUserId, {'user.fields': 'public_metrics'});
-        let modRandomInt = getRandomIntBetween(1, Math.floor(selfData.data.public_metrics.following_count / 1000));
+        let upperLimit = 7;
+        if(Math.floor(selfData.data.public_metrics.following_count / 1000) < upperLimit) {
+            upperLimit = Math.floor(selfData.data.public_metrics.following_count / 1000);
+        }
+        let modRandomInt = getRandomIntBetween(1, upperLimit);
         let ownFollowers = await client.v2.following(ownUserId, { max_results: 1000 });
-        ownFollowersArray = ownFollowers.data;
-        for(let x = 0; x < modRandomInt; x++) {
-             ownFollowers = await client.v2.following(ownUserId, { max_results: 1000 , pagination_token: ownFollowers.meta.next_token});
-             ownFollowersArray = ownFollowersArray.concat(ownFollowers.data);
-             if(x == (modRandomInt - 1)) {removeFollowers(client, ownUserId, ownFollowersArray);}
+        console.log(ownFollowers);
+        console.log('Before Remove Followers Loop... Upper Limit: ' + upperLimit + ' ModRandomInt: ' + modRandomInt);
+        ownFollowersArray = await ownFollowers.data;
+        console.log(ownFollowersArray);
+        if(modRandomInt == 0) {
+            removeFollowers(client, ownUserId, ownFollowersArray);
+        } else {
+            for(let x = 0; x < modRandomInt; x++) {
+                 console.log('Starting Remove Followers Loop...');
+                 ownFollowers = await client.v2.following(ownUserId, { max_results: 1000 , pagination_token: ownFollowers.meta.next_token});
+                 ownFollowersArray = ownFollowersArray.concat(ownFollowers.data);
+                 if(x == (modRandomInt - 1)) {removeFollowers(client, ownUserId, ownFollowersArray);}
+            }
         }
     }
     }catch(error) {
@@ -251,6 +278,7 @@ async function followerWash(client, ownUserId, otherUserId) {
 }
 async function addFollowers(client, ownUserId, otherUserId, otherFollowersArray) {
     try{
+        console.log('In Add Followers...');
         let addArray = []
         let arraySize = getRandomIntBetween(4, 12)
         console.log('otherFollowersArray Size: ' + otherFollowersArray.length + ' addArray Size: ' + arraySize);
@@ -263,6 +291,15 @@ async function addFollowers(client, ownUserId, otherUserId, otherFollowersArray)
                 let response = await client.v2.follow(ownUserId, otherFollowersArray[randomFollowerIndex].id);
                 console.log('Adding Follower - ' + otherFollowersArray[randomFollowerIndex].id);
                 console.log(response);
+                let timeline = await client.v2.userTimeline(otherFollowersArray[randomFollowerIndex].id);
+                console.log(timeline);
+                if(timeline._realData.data) {
+                    let upperIndex = 3;
+                    if(timeline._realData.data.length < 3) { upperIndex = timeline._realData.data.length; }
+                    let randomTweetIndex = getRandomInt(upperIndex);
+                    let timelineLike = await client.v2.like(ownUserId, timeline._realData.data[randomTweetIndex].id);
+                    console.log(timelineLike);
+                }
             }
         }
     }catch(error) {
@@ -272,6 +309,7 @@ async function addFollowers(client, ownUserId, otherUserId, otherFollowersArray)
 }
 async function removeFollowers(client, ownUserId, ownFollowersArray) {
     try{
+        console.log('In Remove Followers...');
         let removalArray = []
         let arraySize = getRandomIntBetween(7, 14)
         console.log('ownFollowersArray Size: ' + ownFollowersArray.length + ' removalArray Size: ' + arraySize);
