@@ -181,7 +181,7 @@ function retweetUser(userData, user) {
             console.log('Starting follower wash...');
             followerWash(client, userID.data.id, userIdList[getRandomInt(userIdList.length)]);
         }
-        if(boolFlagInt4 > 30) {
+        if(boolFlagInt4 > 60) {
             console.log('Starting retweet/like wash...');
             client.v2.userTimeline(honeypotUserId, {
             }).then((val) => {
