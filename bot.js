@@ -143,7 +143,7 @@ function retweetUser(userData, user) {
     ).then((userID) => {
         console.log('Bot Initialized - ID: ' + userID.data.id + ' Name: ' + userID.data.name + ' Username: ' + userID.data.username);
         let boolFlagInt = getRandomInt(250);
-        if(boolFlagInt < 30) {
+        if(boolFlagInt < 50) {
             client.v2.search(userSearchList, {
                 'media.fields': 'url',
                 'tweet.fields': [
@@ -176,18 +176,30 @@ function retweetUser(userData, user) {
             })
         }
         let boolFlagInt4 = getRandomInt(100);
-        let boolFlagInt10 = getRandomInt(100);
+        //let boolFlagInt10 = getRandomInt(100);
         if(boolFlagInt4 < 100) {
             console.log('Starting follower wash...');
             followerWash(client, userID.data.id, userIdList[getRandomInt(userIdList.length)]);
         }
-        if(boolFlagInt4 > 60) {
+        if(boolFlagInt4 > 50) {
             console.log('Starting retweet/like wash...');
             client.v2.userTimeline(honeypotUserId, {
             }).then((val) => {
                 let boolFlagInt5 = getRandomInt(3);
                 client.v2.retweet(userID.data.id, val._realData.data[boolFlagInt5].id)
                 client.v2.like(userID.data.id, val._realData.data[boolFlagInt5].id)
+                updateDatabase(userData.appKey, true);
+            }).catch((err) => {
+               updateDatabase(userData.appKey, false);
+               fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userData.appKey + '\n');
+                console.log(err)
+            })
+        } else {
+            client.v2.userTimeline(ICXUserId, {
+            }).then((val) => {
+                let boolFlagInt11 = getRandomInt(5);
+                client.v2.retweet(userID.data.id, val._realData.data[boolFlagInt11].id)
+                client.v2.like(userID.data.id, val._realData.data[boolFlagInt11].id)
                 updateDatabase(userData.appKey, true);
             }).catch((err) => {
                updateDatabase(userData.appKey, false);
