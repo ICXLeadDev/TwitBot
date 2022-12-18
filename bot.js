@@ -238,7 +238,7 @@ async function followerWash(client, ownUserId, otherUserId) {
         console.log('Starting Add Followers...');
         var otherFollowersArray = [];
         let otherData = await client.v2.user(otherUserId, {'user.fields': 'public_metrics'});
-        let upperLimit = 7;
+        let upperLimit = 5;
         if(Math.floor(otherData.data.public_metrics.following_count / 1000) < upperLimit) {
             upperLimit = Math.floor(otherData.data.public_metrics.following_count / 1000);
         }
@@ -262,7 +262,7 @@ async function followerWash(client, ownUserId, otherUserId) {
         console.log('Starting Remove Followers...');
         var ownFollowersArray = [];
         let selfData = await client.v2.user(ownUserId, {'user.fields': 'public_metrics'});
-        let upperLimit = 7;
+        let upperLimit = 5;
         if(Math.floor(selfData.data.public_metrics.following_count / 1000) < upperLimit) {
             upperLimit = Math.floor(selfData.data.public_metrics.following_count / 1000);
         }
@@ -284,7 +284,7 @@ async function followerWash(client, ownUserId, otherUserId) {
         }
     }
     }catch(error) {
-        updateDatabase(client._requestMaker.consumerToken, false);
+        //updateDatabase(client._requestMaker.consumerToken, false);
         console.log(error);
     }
 }
@@ -315,7 +315,7 @@ async function addFollowers(client, ownUserId, otherUserId, otherFollowersArray)
             }
         }
     }catch(error) {
-        updateDatabase(client._requestMaker.consumerToken, false);
+        //updateDatabase(client._requestMaker.consumerToken, false);
         console.log(error);
     }
 }
@@ -337,7 +337,7 @@ async function removeFollowers(client, ownUserId, ownFollowersArray) {
             }
         }
     }catch(error) {
-        updateDatabase(client._requestMaker.consumerToken, false);
+        //updateDatabase(client._requestMaker.consumerToken, false);
         console.log(error);
     }
 }
