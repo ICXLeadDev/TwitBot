@@ -143,7 +143,7 @@ async function retweetUser(userData, user) {
     let userID = await client.v2.me();
     console.log('Bot Initialized - ID: ' + userID.data.id + ' Name: ' + userID.data.name + ' Username: ' + userID.data.username);
     let boolFlagInt = getRandomInt(250);
-    if(boolFlagInt < 1) {
+    if(boolFlagInt < 50) {
         let val = await client.v2.search(userSearchList, {
                 'media.fields': 'url',
                 'tweet.fields': [
@@ -168,7 +168,7 @@ async function retweetUser(userData, user) {
         console.log('Sending Tweet - Tweet Text: ' + tweetSend);
         client.v2.tweet(tweetSend);
         updateDatabase(userData.appKey, true);
-    } else if (boolFlagInt > 1) {
+    } else if (boolFlagInt > 200) {
         let timeline = await client.v2.userTimeline(ICXUserId, {
                 'media.fields': 'url',
                 'tweet.fields': [
