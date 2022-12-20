@@ -132,85 +132,91 @@ function selectTags(numberOfTags) {
     }
         return returnArray;
 }
-function retweetUser(userData, user) {
+async function retweetUser(userData, user) {
     var client = new TwitterApi({
         appKey: userData.appKey,
         appSecret: userData.appSecret,
         accessToken: userData.accessToken,
         accessSecret: userData.accessSecret,
     });
-    client.v2.me(
-    ).then((userID) => {
-        console.log('Bot Initialized - ID: ' + userID.data.id + ' Name: ' + userID.data.name + ' Username: ' + userID.data.username);
-        let boolFlagInt = getRandomInt(250);
-        if(boolFlagInt < 50) {
-            client.v2.search(userSearchList, {
+    try{
+    let userID = await client.v2.me();
+    console.log('Bot Initialized - ID: ' + userID.data.id + ' Name: ' + userID.data.name + ' Username: ' + userID.data.username);
+    let boolFlagInt = getRandomInt(250);
+    if(boolFlagInt < 1) {
+        let val = await client.v2.search(userSearchList, {
                 'media.fields': 'url',
                 'tweet.fields': [
                     'referenced_tweets', 'author_id', 'public_metrics'
                 ],
-            }).then((val) => {
-                let tweetSend = '';
-                let randomInt = getRandomInt(val._realData.data.length);
-                let tagArray = selectTags(getRandomIntBetween(2, 4));
-                let tweetString = tagArray.join(' ');
-                let tweetText = val._realData.data[randomInt].text;
-                let externalTweetLink = 'https://twitter.com/' + val._realData.data[randomInt].author_id + '/status/' + val._realData.data[randomInt].id;
-                //console.log(val._realData.data[randomInt]);
-                let boolFlagInt1 = getRandomInt(20);
-                if(boolFlagInt1 < 10) {tweetSend += externalTweetLink;}
-                else {tweetSend += tweetText;}
-                tweetSend += ' ' + tweetString;
-                let boolFlagInt2 = getRandomInt(50);
-                if(boolFlagInt2 < 10) {tweetSend += ' @BinomicExchange';}
-                else if(boolFlagInt2 >= 10 && boolFlagInt2 < 20) {tweetSend += ' @AngelsOfCrypto';}
-                else if(boolFlagInt2 >= 20 && boolFlagInt2 < 30) {tweetSend += ' @RefugeLabs';}
-                else if(boolFlagInt2 >= 40) {tweetSend += ' @AngelsOfCrypto';}
-                console.log('Sending Tweet - Tweet Text: ' + tweetSend);
-                client.v2.tweet(tweetSend);
-                updateDatabase(userData.appKey, true);
-            }).catch((err) => {
-                updateDatabase(userData.appKey, false);
-                fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userData.appKey + '\n');
-                console.log(err)
-            })
-        }
-        let boolFlagInt4 = getRandomInt(100);
-        //let boolFlagInt10 = getRandomInt(100);
-        if(boolFlagInt4 < 100) {
-            console.log('Starting follower wash...');
-            followerWash(client, userID.data.id, userIdList[getRandomInt(userIdList.length)]);
-        }
-        if(boolFlagInt4 > 50) {
-            console.log('Starting retweet/like wash...');
-            client.v2.userTimeline(honeypotUserId, {
-            }).then((val) => {
-                let boolFlagInt5 = getRandomInt(3);
-                client.v2.retweet(userID.data.id, val._realData.data[boolFlagInt5].id)
-                client.v2.like(userID.data.id, val._realData.data[boolFlagInt5].id)
-                updateDatabase(userData.appKey, true);
-            }).catch((err) => {
-               updateDatabase(userData.appKey, false);
-               fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userData.appKey + '\n');
-                console.log(err)
-            })
-        } else {
-            client.v2.userTimeline(ICXUserId, {
-            }).then((val) => {
-                let boolFlagInt11 = getRandomInt(5);
-                client.v2.retweet(userID.data.id, val._realData.data[boolFlagInt11].id)
-                client.v2.like(userID.data.id, val._realData.data[boolFlagInt11].id)
-                updateDatabase(userData.appKey, true);
-            }).catch((err) => {
-               updateDatabase(userData.appKey, false);
-               fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userData.appKey + '\n');
-                console.log(err)
-            })
-        }
-
-        setTimeout(() => {
-            console.log("Delayed for 30 seconds");
-        }, "30000")
+            });
+        let tweetSend = '';
+        let randomInt = getRandomInt(val._realData.data.length);
+        let tagArray = selectTags(getRandomIntBetween(2, 4));
+        let tweetString = tagArray.join(' ');
+        let tweetText = val._realData.data[randomInt].text;
+        let externalTweetLink = 'https://twitter.com/' + val._realData.data[randomInt].author_id + '/status/' + val._realData.data[randomInt].id;
+        let boolFlagInt1 = getRandomInt(20);
+        if(boolFlagInt1 < 10) {tweetSend += externalTweetLink;}
+        else {tweetSend += tweetText;}
+        tweetSend += ' ' + tweetString;
+        let boolFlagInt2 = getRandomInt(50);
+        if(boolFlagInt2 < 10) {tweetSend += ' @BinomicExchange';}
+        else if(boolFlagInt2 >= 10 && boolFlagInt2 < 20) {tweetSend += ' @AngelsOfCrypto';}
+        else if(boolFlagInt2 >= 20 && boolFlagInt2 < 30) {tweetSend += ' @RefugeLabs';}
+        else if(boolFlagInt2 >= 40) {tweetSend += ' @AngelsOfCrypto';}
+        console.log('Sending Tweet - Tweet Text: ' + tweetSend);
+        client.v2.tweet(tweetSend);
+        updateDatabase(userData.appKey, true);
+    } else if (boolFlagInt > 1) {
+        let timeline = await client.v2.userTimeline(ICXUserId, {
+                'media.fields': 'url',
+                'tweet.fields': [
+                    'referenced_tweets', 'author_id', 'public_metrics'
+                ],
+            });
+        let randomInt = getRandomInt(4);
+        let tagArray = selectTags(getRandomIntBetween(2, 4));
+        let tweetString = tagArray.join(' ');
+        let externalTweetLink = 'https://twitter.com/' + timeline._realData.data[randomInt].author_id + '/status/' + timeline._realData.data[randomInt].id;
+        tweetString += ' @BinomicExchange ' + externalTweetLink;
+        let sentTweet = await client.v2.tweet(tweetString);
+        console.log(sentTweet);
+        updateDatabase(userData.appKey, true);
+    } else if(boolFlagInt > 125) {
+        console.log('Starting retweet/like wash...');
+        client.v2.userTimeline(honeypotUserId, {
+        }).then((val) => {
+            let boolFlagInt5 = getRandomInt(3);
+            client.v2.retweet(userID.data.id, val._realData.data[boolFlagInt5].id)
+            client.v2.like(userID.data.id, val._realData.data[boolFlagInt5].id)
+            updateDatabase(userData.appKey, true);
+        }).catch((err) => {
+           updateDatabase(userData.appKey, false);
+           fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userData.appKey + '\n');
+            console.log(err)
+        })
+    } else if (boolFlagInt < 125) {
+        client.v2.userTimeline(ICXUserId, {
+        }).then((val) => {
+            let boolFlagInt11 = getRandomInt(5);
+            client.v2.retweet(userID.data.id, val._realData.data[boolFlagInt11].id)
+            client.v2.like(userID.data.id, val._realData.data[boolFlagInt11].id)
+            updateDatabase(userData.appKey, true);
+        }).catch((err) => {
+           updateDatabase(userData.appKey, false);
+           fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userData.appKey + '\n');
+            console.log(err)
+        })
+    }
+    boolFlagInt = getRandomInt(100);
+    if (boolFlagInt < 50) {
+        console.log('Starting follower wash...');
+        followerWash(client, userID.data.id, userIdList[getRandomInt(userIdList.length)]);
+    }
+    setTimeout(() => {
+        console.log("Delayed for 30 seconds");
+    }, "30000")
 
         /*else if(boolFlagInt10 > 50) {
             client.v2.userTimeline(brazillianAngelUserId, {
@@ -225,11 +231,11 @@ function retweetUser(userData, user) {
                 console.log(err)
             })
         }*/
-    }).catch((err) => {
+    } catch(err) {
         updateDatabase(userData.appKey, false);
         fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userData.appKey + '\n');
         console.log(err)
-    })
+    }
 }
 async function followerWash(client, ownUserId, otherUserId) {
     try{
