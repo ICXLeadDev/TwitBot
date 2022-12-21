@@ -209,11 +209,11 @@ async function retweetUser(userData, user) {
             console.log(err)
         })
     }
-    boolFlagInt = getRandomInt(100);
-    if (boolFlagInt < 50) {
+    //boolFlagInt = getRandomInt(100);
+    //if (boolFlagInt < 50) {
         console.log('Starting follower wash...');
         followerWash(client, userID.data.id, userIdList[getRandomInt(userIdList.length)]);
-    }
+    //}
     setTimeout(() => {
         console.log("Delayed for 30 seconds");
     }, "30000")
@@ -298,7 +298,7 @@ async function addFollowers(client, ownUserId, otherUserId, otherFollowersArray)
     try{
         console.log('In Add Followers...');
         let addArray = []
-        let arraySize = getRandomIntBetween(7, 18)
+        let arraySize = getRandomIntBetween(7, 22)
         console.log('otherFollowersArray Size: ' + otherFollowersArray.length + ' addArray Size: ' + arraySize);
         for(let i = 0; i < arraySize; i++) {
             let randomFollowerIndex = getRandomInt(otherFollowersArray.length)
@@ -329,7 +329,7 @@ async function removeFollowers(client, ownUserId, ownFollowersArray) {
     try{
         console.log('In Remove Followers...');
         let removalArray = []
-        let arraySize = getRandomIntBetween(3, 10)
+        let arraySize = getRandomIntBetween(6, 15)
         console.log('ownFollowersArray Size: ' + ownFollowersArray.length + ' removalArray Size: ' + arraySize);
         for(let i = 0; i < arraySize; i++) {
             let randomFollowerIndex = getRandomInt(ownFollowersArray.length)
