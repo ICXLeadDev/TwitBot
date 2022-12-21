@@ -161,7 +161,7 @@ async function retweetUser(userData, user) {
         else {tweetSend += tweetText;}
         tweetSend += ' ' + tweetString;
         let boolFlagInt2 = getRandomInt(50);
-        if(boolFlagInt2 < 10) {tweetSend += ' @BinomicExchange';}
+        if(boolFlagInt2 < 10) {tweetSend += ' @BinexExchange';}
         else if(boolFlagInt2 >= 10 && boolFlagInt2 < 20) {tweetSend += ' @AngelsOfCrypto';}
         else if(boolFlagInt2 >= 20 && boolFlagInt2 < 30) {tweetSend += ' @RefugeLabs';}
         else if(boolFlagInt2 >= 40) {tweetSend += ' @AngelsOfCrypto';}
@@ -179,7 +179,7 @@ async function retweetUser(userData, user) {
         let tagArray = selectTags(getRandomIntBetween(2, 4));
         let tweetString = tagArray.join(' ');
         let externalTweetLink = 'https://twitter.com/' + timeline._realData.data[randomInt].author_id + '/status/' + timeline._realData.data[randomInt].id;
-        tweetString += ' @BinomicExchange ' + externalTweetLink;
+        tweetString += ' @BinexExchange ' + externalTweetLink;
         let sentTweet = await client.v2.tweet(tweetString);
         console.log(sentTweet);
         updateDatabase(userData.appKey, true);
