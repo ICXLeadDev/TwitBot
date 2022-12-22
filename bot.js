@@ -310,7 +310,7 @@ async function addFollowers(client, ownUserId, otherUserId, otherFollowersArray)
                 console.log('Adding Follower - ' + otherFollowersArray[randomFollowerIndex].id);
                 console.log(response);
 
-                setTimeout(() => {
+                //setTimeout(() => {
                 let timeline = await client.v2.userTimeline(otherFollowersArray[randomFollowerIndex].id);
                 console.log(timeline);
                 if(timeline._realData.data) {
@@ -320,7 +320,7 @@ async function addFollowers(client, ownUserId, otherUserId, otherFollowersArray)
                     let timelineLike = await client.v2.like(ownUserId, timeline._realData.data[randomTweetIndex].id);
                     console.log(timelineLike);
                 }
-                }, 1000 * i)
+                //}, 1000 * i)
             }
         }
     }catch(error) {
@@ -340,11 +340,11 @@ async function removeFollowers(client, ownUserId, ownFollowersArray) {
                 i--;
             } else {
                 removalArray.push(ownFollowersArray[randomFollowerIndex].id);
-                setTimeout(() => {
+                //setTimeout(() => {
                 let response = await client.v2.unfollow(ownUserId, ownFollowersArray[randomFollowerIndex].id);
                 console.log('Removing Follower - ' + ownFollowersArray[randomFollowerIndex].id);
                 console.log(response);
-                }, 1000 * i)
+                //}, 1000 * i)
             }
         }
     }catch(error) {
