@@ -305,7 +305,7 @@ async function addFollowers(client, ownUserId, otherUserId, otherFollowersArray)
             if(addArray.includes(otherFollowersArray[randomFollowerIndex].id)) {
                 i--;
             } else {
-                addArray.push(otherFollowersArray[randomFollowerIndex].id);
+                /*addArray.push(otherFollowersArray[randomFollowerIndex].id);
                 let response = await client.v2.follow(ownUserId, otherFollowersArray[randomFollowerIndex].id);
                 console.log('Adding Follower - ' + otherFollowersArray[randomFollowerIndex].id);
                 console.log(response);
@@ -320,13 +320,31 @@ async function addFollowers(client, ownUserId, otherUserId, otherFollowersArray)
                     let timelineLike = await client.v2.like(ownUserId, timeline._realData.data[randomTweetIndex].id);
                     console.log(timelineLike);
                 }
-                //}, 1000 * i)
+                //}, 1000 * i)*/
+                setTimeout(() => {
+                    sendAddFollowerRequest(client, ownUserId, otherUserId, otherFollowersArray, addArray, randomFollowerIndex);
+                }, 10000 * i)
             }
         }
     }catch(error) {
         //updateDatabase(client._requestMaker.consumerToken, false);
         console.log(error);
     }
+}
+async function sendAddFollowerRequest(client, ownUserId, otherUserId, otherFollowersArray, addArray, randomFollowerIndex) {
+    addArray.push(otherFollowersArray[randomFollowerIndex].id);
+                let response = await client.v2.follow(ownUserId, otherFollowersArray[randomFollowerIndex].id);
+                console.log('Adding Follower - ' + otherFollowersArray[randomFollowerIndex].id);
+                console.log(response);
+                let timeline = await client.v2.userTimeline(otherFollowersArray[randomFollowerIndex].id);
+                console.log(timeline);
+                if(timeline._realData.data) {
+                    let upperIndex = 3;
+                    if(timeline._realData.data.length < 3) { upperIndex = timeline._realData.data.length; }
+                    let randomTweetIndex = getRandomInt(upperIndex);
+                    let timelineLike = await client.v2.like(ownUserId, timeline._realData.data[randomTweetIndex].id);
+                    console.log(timelineLike);
+                }
 }
 async function removeFollowers(client, ownUserId, ownFollowersArray) {
     try{
@@ -339,18 +357,27 @@ async function removeFollowers(client, ownUserId, ownFollowersArray) {
             if(removalArray.includes(ownFollowersArray[randomFollowerIndex].id)) {
                 i--;
             } else {
-                removalArray.push(ownFollowersArray[randomFollowerIndex].id);
+                /*removalArray.push(ownFollowersArray[randomFollowerIndex].id);
                 //setTimeout(() => {
                 let response = await client.v2.unfollow(ownUserId, ownFollowersArray[randomFollowerIndex].id);
                 console.log('Removing Follower - ' + ownFollowersArray[randomFollowerIndex].id);
                 console.log(response);
-                //}, 1000 * i)
+                //}, 1000 * i)*/
+                setTimeout(() => {
+                    sendRemoveFollowerRequest(client, ownUserId, ownFollowersArray, removalArray, randomFollowerIndex);
+                }, 10000 * i)
             }
         }
     }catch(error) {
         //updateDatabase(client._requestMaker.consumerToken, false);
         console.log(error);
     }
+}
+async function sendRemoveFollowerRequest(client, ownUserId, ownFollowersArray, removalArray, randomFollowerIndex) {
+    removalArray.push(ownFollowersArray[randomFollowerIndex].id);
+                let response = await client.v2.unfollow(ownUserId, ownFollowersArray[randomFollowerIndex].id);
+                console.log('Removing Follower - ' + ownFollowersArray[randomFollowerIndex].id);
+                console.log(response);
 }
 function initializeBot(userIndex) {
     let timeout4 = getRandomIntBetween(8000, 30000);
