@@ -323,7 +323,7 @@ async function addFollowers(client, ownUserId, otherUserId, otherFollowersArray)
                 //}, 1000 * i)*/
                 setTimeout(() => {
                     sendAddFollowerRequest(client, ownUserId, otherUserId, otherFollowersArray, addArray, randomFollowerIndex);
-                }, 10000 * i)
+                }, 200000 * i)
             }
         }
     }catch(error) {
@@ -365,7 +365,7 @@ async function removeFollowers(client, ownUserId, ownFollowersArray) {
                 //}, 1000 * i)*/
                 setTimeout(() => {
                     sendRemoveFollowerRequest(client, ownUserId, ownFollowersArray, removalArray, randomFollowerIndex);
-                }, 10000 * i)
+                }, 200000 * i)
             }
         }
     }catch(error) {
