@@ -254,13 +254,14 @@ async function retweetUser(userData, user) {
 async function followerWash(client, ownUserId, otherUserId) {
     try{
     let randomInt = getRandomInt(100);
-    if(randomInt > 50) {
+    if(randomInt >= 50) {
         console.log('Starting Add Followers...');
         var otherFollowersArray = [];
         let otherData = await client.v2.user(otherUserId, {'user.fields': 'public_metrics'});
-        let upperLimit = 5;
-        if(Math.floor(otherData.data.public_metrics.following_count / 1000) < upperLimit) {
-            upperLimit = Math.floor(otherData.data.public_metrics.following_count / 1000);
+        console.log(otherData);
+        let upperLimit = 15;
+        if(Math.floor(otherData.data.public_metrics.followers_count / 1000) < upperLimit) {
+            upperLimit = Math.floor(otherData.data.public_metrics.followers_count / 1000);
         }
         let modRandomInt = getRandomIntBetween(1, upperLimit);
         let otherFollowers = await client.v2.followers(otherUserId, { max_results: 1000 });
@@ -273,12 +274,17 @@ async function followerWash(client, ownUserId, otherUserId) {
         } else {
             for(let x = 0; x < modRandomInt; x++) {
                  console.log('Starting Add Followers Loop...');
-                 otherFollowers = await client.v2.followers(otherUserId, { max_results: 1000 , pagination_token: otherFollowers.meta.next_token});
-                 otherFollowersArray = otherFollowersArray.concat(otherFollowers.data);
-                 if(x == (modRandomInt - 1)) {
-                     quoteTweetLargeUser(client, ownUserId, otherUserId, otherFollowersArray);
-                     addFollowers(client, ownUserId, otherUserId, otherFollowersArray);
-                 }
+//                    getNextFollowerList(client, ownUserId, otherUserId, otherFollowersArray, addArray, randomFollowerIndex);
+                 setTimeout(async () => {
+                     console.log('Inside timeout function add followers: ' + x);
+                     otherFollowers = await client.v2.followers(otherUserId, { max_results: 1000 , pagination_token: otherFollowers.meta.next_token});
+                     otherFollowersArray = otherFollowersArray.concat(otherFollowers.data);
+                     if(x == (modRandomInt - 1)) {
+                         quoteTweetLargeUser(client, ownUserId, otherUserId, otherFollowersArray);
+                         addFollowers(client, ownUserId, otherUserId, otherFollowersArray);
+                     }
+                 //}, 20000 * x)
+                 }, 200000 * x)
             }
         }
     } else {
