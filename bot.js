@@ -132,6 +132,19 @@ function selectTags(numberOfTags) {
     }
         return returnArray;
 }
+function selectUserTags(userArray, numberOfTags) {
+    var returnArray = [];
+    for (let i = 0; i < numberOfTags; i++) {
+        let nextTag = '@' + userArray[getRandomInt(userArray.length)].username;
+        console.log("Next User Tag: " + nextTag);
+        if(!returnArray.includes(nextTag)) {
+            returnArray.push(nextTag);
+        } else {
+            i--;
+        }
+    }
+        return returnArray;
+}
 async function retweetUser(userData, user) {
     var client = new TwitterApi({
         appKey: userData.appKey,
@@ -143,7 +156,7 @@ async function retweetUser(userData, user) {
     let userID = await client.v2.me();
     console.log('Bot Initialized - ID: ' + userID.data.id + ' Name: ' + userID.data.name + ' Username: ' + userID.data.username);
     let boolFlagInt = getRandomInt(250);
-    if(boolFlagInt < 50) {
+    /*if(boolFlagInt < 170) {
         let val = await client.v2.search(userSearchList, {
                 'media.fields': 'url',
                 'tweet.fields': [
@@ -164,11 +177,12 @@ async function retweetUser(userData, user) {
         if(boolFlagInt2 < 10) {tweetSend += ' @BinexExchange';}
         else if(boolFlagInt2 >= 10 && boolFlagInt2 < 20) {tweetSend += ' @AngelsOfCrypto';}
         else if(boolFlagInt2 >= 20 && boolFlagInt2 < 30) {tweetSend += ' @RefugeLabs';}
-        else if(boolFlagInt2 >= 40) {tweetSend += ' @AngelsOfCrypto';}
+        else if(boolFlagInt2 >= 40) {tweetSend += ' @BinexExchange';}
         console.log('Sending Tweet - Tweet Text: ' + tweetSend);
         client.v2.tweet(tweetSend);
-        updateDatabase(userData.appKey, true);
-    } else if (boolFlagInt > 200) {
+        updateDatabase(userData.appKey, true);*/
+    //} else if (boolFlagInt > 200) {
+    if (boolFlagInt > 200) {
         let timeline = await client.v2.userTimeline(ICXUserId, {
                 'media.fields': 'url',
                 'tweet.fields': [
@@ -261,7 +275,10 @@ async function followerWash(client, ownUserId, otherUserId) {
                  console.log('Starting Add Followers Loop...');
                  otherFollowers = await client.v2.followers(otherUserId, { max_results: 1000 , pagination_token: otherFollowers.meta.next_token});
                  otherFollowersArray = otherFollowersArray.concat(otherFollowers.data);
-                 if(x == (modRandomInt - 1)) {addFollowers(client, ownUserId, otherUserId, otherFollowersArray);}
+                 if(x == (modRandomInt - 1)) {
+                     quoteTweetLargeUser(client, ownUserId, otherUserId, otherFollowersArray);
+                     addFollowers(client, ownUserId, otherUserId, otherFollowersArray);
+                 }
             }
         }
     } else {
@@ -378,6 +395,43 @@ async function sendRemoveFollowerRequest(client, ownUserId, ownFollowersArray, r
                 let response = await client.v2.unfollow(ownUserId, ownFollowersArray[randomFollowerIndex].id);
                 console.log('Removing Follower - ' + ownFollowersArray[randomFollowerIndex].id);
                 console.log(response);
+}
+async function quoteTweetLargeUser(client, ownUserId, otherUserId, otherFollowersArray) {
+    let randomIntFlag = getRandomInt(100);
+    if(randomIntFlag > 0) {
+        console.log("Starting quote tweet large user..");
+        try {
+        let val = await client.v2.search(userSearchList, {
+                'media.fields': 'url',
+                'tweet.fields': [
+                    'referenced_tweets', 'author_id', 'public_metrics'
+                ],
+            });
+        let tweetSend = '';
+        let randomInt = getRandomInt(val._realData.data.length);
+        let tagArray = selectTags(getRandomIntBetween(2, 4));
+        let userTagArray = selectUserTags(otherFollowersArray, getRandomIntBetween(2, 5))
+        let tweetString = tagArray.join(' ') + ' ' +  userTagArray.join(' ');
+        let tweetText = val._realData.data[randomInt].text;
+        let externalTweetLink = 'https://twitter.com/' + val._realData.data[randomInt].author_id + '/status/' + val._realData.data[randomInt].id;
+        let boolFlagInt1 = getRandomInt(20);
+        tweetSend += externalTweetLink;
+        //if(boolFlagInt1 < 10) {tweetSend += externalTweetLink;}
+        //else {tweetSend += tweetText;}
+        tweetSend += ' ' + tweetString;
+        let boolFlagInt2 = getRandomInt(50);
+        if(boolFlagInt2 < 10) {tweetSend += ' @BinexExchange';}
+        else if(boolFlagInt2 >= 10 && boolFlagInt2 < 20) {tweetSend += ' @AngelsOfCrypto';}
+        else if(boolFlagInt2 >= 20 && boolFlagInt2 < 30) {tweetSend += ' @RefugeLabs';}
+        else if(boolFlagInt2 >= 40) {tweetSend += ' @BinexExchange';}
+        console.log('Sending Tweet - Tweet Text: ' + tweetSend);
+        client.v2.tweet(tweetSend);
+        updateDatabase(client._requestMaker.consumerToken, true);
+        }catch(err) {
+            updateDatabase(client._requestMaker.consumerToken, false);
+            console.log(err);
+        }
+    }
 }
 function initializeBot(userIndex) {
     let timeout4 = getRandomIntBetween(8000, 30000);
