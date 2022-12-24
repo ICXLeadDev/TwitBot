@@ -273,6 +273,7 @@ async function followerWash(client, ownUserId, otherUserId) {
             addFollowers(client, ownUserId, otherUserId, otherFollowersArray);
         } else {
             for(let x = 0; x < modRandomInt; x++) {
+                 try{
                  console.log('Starting Add Followers Loop...');
 //                    getNextFollowerList(client, ownUserId, otherUserId, otherFollowersArray, addArray, randomFollowerIndex);
                  setTimeout(async () => {
@@ -285,6 +286,9 @@ async function followerWash(client, ownUserId, otherUserId) {
                      }
                  //}, 20000 * x)
                  }, 200000 * x)
+                 }catch(err) {
+                     console.log(err);
+                 }
             }
         }
     } else {
@@ -355,6 +359,7 @@ async function addFollowers(client, ownUserId, otherUserId, otherFollowersArray)
     }
 }
 async function sendAddFollowerRequest(client, ownUserId, otherUserId, otherFollowersArray, addArray, randomFollowerIndex) {
+    try{
     addArray.push(otherFollowersArray[randomFollowerIndex].id);
                 let response = await client.v2.follow(ownUserId, otherFollowersArray[randomFollowerIndex].id);
                 console.log('Adding Follower - ' + otherFollowersArray[randomFollowerIndex].id);
@@ -368,6 +373,9 @@ async function sendAddFollowerRequest(client, ownUserId, otherUserId, otherFollo
                     let timelineLike = await client.v2.like(ownUserId, timeline._realData.data[randomTweetIndex].id);
                     console.log(timelineLike);
                 }
+    }catch(err) {
+        console.log(err);
+    }
 }
 async function removeFollowers(client, ownUserId, ownFollowersArray) {
     try{
@@ -397,10 +405,14 @@ async function removeFollowers(client, ownUserId, ownFollowersArray) {
     }
 }
 async function sendRemoveFollowerRequest(client, ownUserId, ownFollowersArray, removalArray, randomFollowerIndex) {
+    try{
     removalArray.push(ownFollowersArray[randomFollowerIndex].id);
                 let response = await client.v2.unfollow(ownUserId, ownFollowersArray[randomFollowerIndex].id);
                 console.log('Removing Follower - ' + ownFollowersArray[randomFollowerIndex].id);
                 console.log(response);
+   }catch(err){
+       console.log(err);
+   }
 }
 async function quoteTweetLargeUser(client, ownUserId, otherUserId, otherFollowersArray) {
     let randomIntFlag = getRandomInt(100);
