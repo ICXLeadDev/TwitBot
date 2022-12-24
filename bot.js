@@ -277,12 +277,16 @@ async function followerWash(client, ownUserId, otherUserId) {
                  console.log('Starting Add Followers Loop...');
 //                    getNextFollowerList(client, ownUserId, otherUserId, otherFollowersArray, addArray, randomFollowerIndex);
                  setTimeout(async () => {
+                     try{
                      console.log('Inside timeout function add followers: ' + x);
                      otherFollowers = await client.v2.followers(otherUserId, { max_results: 1000 , pagination_token: otherFollowers.meta.next_token});
                      otherFollowersArray = otherFollowersArray.concat(otherFollowers.data);
                      if(x == (modRandomInt - 1)) {
                          quoteTweetLargeUser(client, ownUserId, otherUserId, otherFollowersArray);
                          addFollowers(client, ownUserId, otherUserId, otherFollowersArray);
+                     }
+                     }catch(err) {
+                         console.log(err);
                      }
                  //}, 20000 * x)
                  }, 200000 * x)
