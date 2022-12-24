@@ -254,7 +254,8 @@ async function retweetUser(userData, user) {
 async function followerWash(client, ownUserId, otherUserId) {
     try{
     let randomInt = getRandomInt(100);
-    if(randomInt >= 50) {
+    if(true){
+    //if(randomInt >= 50) {
         console.log('Starting Add Followers...');
         var otherFollowersArray = [];
         let otherData = await client.v2.user(otherUserId, {'user.fields': 'public_metrics'});
