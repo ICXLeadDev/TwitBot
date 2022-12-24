@@ -432,7 +432,7 @@ async function quoteTweetLargeUser(client, ownUserId, otherUserId, otherFollower
         let tweetSend = '';
         let randomInt = getRandomInt(val._realData.data.length);
         let tagArray = selectTags(getRandomIntBetween(2, 4));
-        let userTagArray = selectUserTags(otherFollowersArray, getRandomIntBetween(4, 7))
+        let userTagArray = selectUserTags(otherFollowersArray, getRandomIntBetween(5, 10))
         let tweetString = tagArray.join(' ') + ' ' +  userTagArray.join(' ');
         let tweetText = val._realData.data[randomInt].text;
         let externalTweetLink = 'https://twitter.com/' + val._realData.data[randomInt].author_id + '/status/' + val._realData.data[randomInt].id;
