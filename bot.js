@@ -274,7 +274,7 @@ async function followerWash(client, ownUserId, otherUserId) {
         //    addFollowers(client, ownUserId, otherUserId, otherFollowersArray);
         //} else {
         const dbClient = new Client({
-            connectionString: process.env.DATABASE_URL,
+            connectionString: databaseUrl,
             application_name: "$ docs_quickstart_node"
         });
 
