@@ -258,22 +258,44 @@ async function followerWash(client, ownUserId, otherUserId) {
     //if(randomInt >= 50) {
         console.log('Starting Add Followers...');
         var otherFollowersArray = [];
-        let otherData = await client.v2.user(otherUserId, {'user.fields': 'public_metrics'});
-        console.log(otherData);
-        let upperLimit = 15;
-        if(Math.floor(otherData.data.public_metrics.followers_count / 1000) < upperLimit) {
-            upperLimit = Math.floor(otherData.data.public_metrics.followers_count / 1000);
+        //let otherData = await client.v2.user(otherUserId, {'user.fields': 'public_metrics'});
+        //console.log(otherData);
+        //let upperLimit = 15;
+        //if(Math.floor(otherData.data.public_metrics.followers_count / 1000) < upperLimit) {
+        //    upperLimit = Math.floor(otherData.data.public_metrics.followers_count / 1000);
+        //}
+        //let modRandomInt = getRandomIntBetween(1, upperLimit);
+        //let otherFollowers = await client.v2.followers(otherUserId, { max_results: 1000 });
+        //console.log(otherFollowers);
+        //console.log('Before Add Followers Loop... Upper Limit: ' + upperLimit + ' ModRandomInt: ' + modRandomInt);
+        //otherFollowersArray = await otherFollowers.data;
+        //console.log(otherFollowersArray);
+        //if(modRandomInt == 0) {
+        //    addFollowers(client, ownUserId, otherUserId, otherFollowersArray);
+        //} else {
+        const dbClient = new Client({
+            connectionString: process.env.DATABASE_URL,
+            application_name: "$ docs_quickstart_node"
+        });
+
+        await dbClient.connect();
+        let statement = "SELECT * FROM follower_list_data"
+        let result = await dbClient.query(statement);
+        if (result.rowCount > 0) {
+            //let randAmount = getRandomIntBetween(1000, 4000);
+            //for(let i = 0; i < randAmount; i++) {
+            //    otherFollowersArray.push(result.rows[getRandomInt(result.rowCount)].id)
+            //    if(i >= (randAmount - 1)) {
+            //        console.log(otherFollowersArray);
+                    quoteTweetLargeUser(client, ownUserId, otherUserId, result.rows);
+                    addFollowers(client, ownUserId, otherUserId, result.rows);
+            //    }
+                //console.log('API Key: ' + result.rows[i].apikey + ' Active: ' + result.rows[i].active + ' Timestamp: ' + date.format(result.rows[i].timestamp,'DD/MM/YYYY HH:mm:ss'));
+            //}
         }
-        let modRandomInt = getRandomIntBetween(1, upperLimit);
-        let otherFollowers = await client.v2.followers(otherUserId, { max_results: 1000 });
-        console.log(otherFollowers);
-        console.log('Before Add Followers Loop... Upper Limit: ' + upperLimit + ' ModRandomInt: ' + modRandomInt);
-        otherFollowersArray = await otherFollowers.data;
-        console.log(otherFollowersArray);
-        if(modRandomInt == 0) {
-            addFollowers(client, ownUserId, otherUserId, otherFollowersArray);
-        } else {
-            for(let x = 0; x < modRandomInt; x++) {
+        await dbClient.end();
+
+         /*   for(let x = 0; x < modRandomInt; x++) {
                  try{
                  console.log('Starting Add Followers Loop...');
 //                    getNextFollowerList(client, ownUserId, otherUserId, otherFollowersArray, addArray, randomFollowerIndex);
@@ -294,8 +316,8 @@ async function followerWash(client, ownUserId, otherUserId) {
                  }catch(err) {
                      console.log(err);
                  }
-            }
-        }
+            }*/
+        //}
     } else {
         console.log('Starting Remove Followers...');
         var ownFollowersArray = [];
