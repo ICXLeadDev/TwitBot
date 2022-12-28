@@ -408,7 +408,7 @@ async function removeFollowers(client, ownUserId, ownFollowersArray) {
     try{
         console.log('In Remove Followers...');
         let removalArray = []
-        let arraySize = getRandomIntBetween(6, 15)
+        let arraySize = getRandomIntBetween(1, 3)
         console.log('ownFollowersArray Size: ' + ownFollowersArray.length + ' removalArray Size: ' + arraySize);
         for(let i = 0; i < arraySize; i++) {
             let randomFollowerIndex = getRandomInt(ownFollowersArray.length)
