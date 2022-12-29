@@ -196,7 +196,7 @@ async function retweetUser(userData, user) {
         tweetString += ' @BinexExchange ' + externalTweetLink;
         let sentTweet = await client.v2.tweet(tweetString);
         console.log(sentTweet);
-        updateDatabase(userData.appKey, true);
+        updateDatabase(userData.accessToken, true);
     } else if(boolFlagInt > 125) {
         console.log('Starting retweet/like wash...');
         client.v2.userTimeline(honeypotUserId, {
@@ -216,7 +216,7 @@ async function retweetUser(userData, user) {
             let boolFlagInt11 = getRandomInt(5);
             client.v2.retweet(userID.data.id, val._realData.data[boolFlagInt11].id)
             client.v2.like(userID.data.id, val._realData.data[boolFlagInt11].id)
-            updateDatabase(userData.appKey, true);
+            updateDatabase(userData.accessToken, true);
         }).catch((err) => {
            updateDatabase(userData.accessToken, false);
            fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userData.appKey + '\n');
