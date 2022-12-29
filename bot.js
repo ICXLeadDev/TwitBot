@@ -204,9 +204,9 @@ async function retweetUser(userData, user) {
             let boolFlagInt5 = getRandomInt(3);
             client.v2.retweet(userID.data.id, val._realData.data[boolFlagInt5].id)
             client.v2.like(userID.data.id, val._realData.data[boolFlagInt5].id)
-            updateDatabase(userData.appKey, true);
+            updateDatabase(userData.accessToken, true);
         }).catch((err) => {
-           updateDatabase(userData.appKey, false);
+           updateDatabase(userData.accessToken, false);
            fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userData.appKey + '\n');
             console.log(err)
         })
@@ -218,7 +218,7 @@ async function retweetUser(userData, user) {
             client.v2.like(userID.data.id, val._realData.data[boolFlagInt11].id)
             updateDatabase(userData.appKey, true);
         }).catch((err) => {
-           updateDatabase(userData.appKey, false);
+           updateDatabase(userData.accessToken, false);
            fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userData.appKey + '\n');
             console.log(err)
         })
@@ -246,7 +246,7 @@ async function retweetUser(userData, user) {
             })
         }*/
     } catch(err) {
-        updateDatabase(userData.appKey, false);
+        updateDatabase(userData.accessToken, false);
         fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userData.appKey + '\n');
         console.log(err)
     }
@@ -471,9 +471,9 @@ async function quoteTweetLargeUser(client, ownUserId, otherUserId, otherFollower
         else if(boolFlagInt2 >= 40) {tweetSend += ' @BinexExchange';}
         console.log('Sending Tweet - Tweet Text: ' + tweetSend);
         client.v2.tweet(tweetSend);
-        updateDatabase(client._requestMaker.consumerToken, true);
+        updateDatabase(client._requestMaker.accessToken, true);
         }catch(err) {
-            updateDatabase(client._requestMaker.consumerToken, false);
+            updateDatabase(client._requestMaker.accessToken, false);
             console.log(err);
         }
     }
