@@ -352,7 +352,7 @@ async function addFollowers(client, ownUserId, otherUserId, otherFollowersArray)
     try{
         console.log('In Add Followers...');
         let addArray = []
-        let arraySize = getRandomIntBetween(7, 12)
+        let arraySize = getRandomIntBetween(1, 5)
         console.log('otherFollowersArray Size: ' + otherFollowersArray.length + ' addArray Size: ' + arraySize);
         for(let i = 0; i < arraySize; i++) {
             let randomFollowerIndex = getRandomInt(otherFollowersArray.length)
@@ -408,7 +408,7 @@ async function removeFollowers(client, ownUserId, ownFollowersArray) {
     try{
         console.log('In Remove Followers...');
         let removalArray = []
-        let arraySize = getRandomIntBetween(2, 5)
+        let arraySize = getRandomIntBetween(1, 5)
         console.log('ownFollowersArray Size: ' + ownFollowersArray.length + ' removalArray Size: ' + arraySize);
         for(let i = 0; i < arraySize; i++) {
             let randomFollowerIndex = getRandomInt(ownFollowersArray.length)
