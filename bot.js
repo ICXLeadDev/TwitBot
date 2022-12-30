@@ -183,20 +183,20 @@ async function retweetUser(userData, user) {
         updateDatabase(userData.appKey, true);*/
     //} else if (boolFlagInt > 200) {
     if (boolFlagInt > 200) {
-        let timeline = await client.v2.userTimeline(ICXUserId, {
+        /*let timeline = await client.v2.userTimeline(ICXUserId, {
                 'media.fields': 'url',
                 'tweet.fields': [
                     'referenced_tweets', 'author_id', 'public_metrics'
                 ],
             });
         let randomInt = getRandomInt(4);
-        let tagArray = selectTags(getRandomIntBetween(2, 4));
+        let tagArray = selectTags(getRandomIntBetween(1, 3));
         let tweetString = tagArray.join(' ');
         let externalTweetLink = 'https://twitter.com/' + timeline._realData.data[randomInt].author_id + '/status/' + timeline._realData.data[randomInt].id;
         tweetString += ' @BinexExchange ' + externalTweetLink;
         let sentTweet = await client.v2.tweet(tweetString);
         console.log(sentTweet);
-        updateDatabase(userData.accessToken, true);
+        updateDatabase(userData.accessToken, true);*/
     } else if(boolFlagInt > 125) {
         console.log('Starting retweet/like wash...');
         client.v2.userTimeline(honeypotUserId, {
@@ -352,7 +352,7 @@ async function addFollowers(client, ownUserId, otherUserId, otherFollowersArray)
     try{
         console.log('In Add Followers...');
         let addArray = []
-        let arraySize = getRandomIntBetween(7, 22)
+        let arraySize = getRandomIntBetween(1, 6)
         console.log('otherFollowersArray Size: ' + otherFollowersArray.length + ' addArray Size: ' + arraySize);
         for(let i = 0; i < arraySize; i++) {
             let randomFollowerIndex = getRandomInt(otherFollowersArray.length)
@@ -455,20 +455,34 @@ async function quoteTweetLargeUser(client, ownUserId, otherUserId, otherFollower
         let tweetSend = '';
         let randomInt = getRandomInt(val._realData.data.length);
         let tagArray = selectTags(getRandomIntBetween(2, 4));
-        let userTagArray = selectUserTags(otherFollowersArray, getRandomIntBetween(5, 10))
+        let userTagArray = selectUserTags(otherFollowersArray, getRandomIntBetween(1, 3))
         let tweetString = tagArray.join(' ') + ' ' +  userTagArray.join(' ');
-        let tweetText = val._realData.data[randomInt].text;
+        let boolFlagInt2 = getRandomInt(50);
+        var tweetText;
+        if(boolFlagInt2 >= 0 && boolFlagInt2 < 5) {
+            tweetText = "Follow @BinexExchange for their upcoming token launch";
+        }else if(boolFlagInt2 >= 5 && boolFlagInt2 < 10) {
+            tweetText = "$BNE is launching soon, follow @BinexExchange to get in early!";
+        }else if(boolFlagInt2 >= 10 && boolFlagInt2 < 15) {
+            tweetText = "This new exchange looks interesting, @BinexExchange";
+        }else if(boolFlagInt2 >= 15 && boolFlagInt2 < 20) {
+            tweetText = "More CEXs need to implement some transparency, @BinexExchange promises to do this.";
+        }else if(boolFlagInt2 >= 20 && boolFlagInt2 < 25) {
+            tweetText = "New #Crypto exchange launching, checkout @BinexExchange";
+        } else {
+            tweetText = val._realData.data[randomInt].text;
+        }
         let externalTweetLink = 'https://twitter.com/' + val._realData.data[randomInt].author_id + '/status/' + val._realData.data[randomInt].id;
         let boolFlagInt1 = getRandomInt(20);
         tweetSend += externalTweetLink;
         //if(boolFlagInt1 < 10) {tweetSend += externalTweetLink;}
         //else {tweetSend += tweetText;}
         tweetSend += ' ' + tweetString;
-        let boolFlagInt2 = getRandomInt(50);
-        if(boolFlagInt2 < 10) {tweetSend += ' @BinexExchange';}
-        else if(boolFlagInt2 >= 10 && boolFlagInt2 < 20) {tweetSend += ' @AngelsOfCrypto';}
-        else if(boolFlagInt2 >= 20 && boolFlagInt2 < 30) {tweetSend += ' @RefugeLabs';}
-        else if(boolFlagInt2 >= 40) {tweetSend += ' @BinexExchange';}
+        if(boolFlagInt2 > 40) {tweetSend += ' @BinexExchange';}
+        //if(boolFlagInt2 < 10) {tweetSend += ' @BinexExchange';}
+        //else if(boolFlagInt2 >= 10 && boolFlagInt2 < 20) {tweetSend += ' @AngelsOfCrypto';}
+        //else if(boolFlagInt2 >= 20 && boolFlagInt2 < 30) {tweetSend += ' @RefugeLabs';}
+        //else if(boolFlagInt2 >= 40) {tweetSend += ' @BinexExchange';}
         console.log('Sending Tweet - Tweet Text: ' + tweetSend);
         client.v2.tweet(tweetSend);
         updateDatabase(client._requestMaker.accessToken, true);
