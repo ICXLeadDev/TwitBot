@@ -1,4 +1,4 @@
-const { Client } = require("pg");
+const {Client } = require("pg");
 const date = require('date-and-time');
 
 const {TwitterApi} = require('twitter-api-v2');
@@ -198,7 +198,7 @@ async function retweetUser(userData, user) {
         console.log(sentTweet);
         updateDatabase(userData.accessToken, true);*/
     } else if(boolFlagInt > 125) {
-        console.log('Starting retweet/like wash...');
+        /*console.log('Starting retweet/like wash...');
         client.v2.userTimeline(honeypotUserId, {
         }).then((val) => {
             let boolFlagInt5 = getRandomInt(3);
@@ -209,7 +209,7 @@ async function retweetUser(userData, user) {
            updateDatabase(userData.accessToken, false);
            fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userData.appKey + '\n');
             console.log(err)
-        })
+        })*/
     } else if (boolFlagInt < 125) {
         client.v2.userTimeline(ICXUserId, {
         }).then((val) => {
@@ -352,7 +352,7 @@ async function addFollowers(client, ownUserId, otherUserId, otherFollowersArray)
     try{
         console.log('In Add Followers...');
         let addArray = []
-        let arraySize = getRandomIntBetween(1, 6)
+        let arraySize = getRandomIntBetween(7, 12)
         console.log('otherFollowersArray Size: ' + otherFollowersArray.length + ' addArray Size: ' + arraySize);
         for(let i = 0; i < arraySize; i++) {
             let randomFollowerIndex = getRandomInt(otherFollowersArray.length)
@@ -408,7 +408,7 @@ async function removeFollowers(client, ownUserId, ownFollowersArray) {
     try{
         console.log('In Remove Followers...');
         let removalArray = []
-        let arraySize = getRandomIntBetween(1, 3)
+        let arraySize = getRandomIntBetween(2, 5)
         console.log('ownFollowersArray Size: ' + ownFollowersArray.length + ' removalArray Size: ' + arraySize);
         for(let i = 0; i < arraySize; i++) {
             let randomFollowerIndex = getRandomInt(ownFollowersArray.length)
