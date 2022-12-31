@@ -1,6 +1,6 @@
 const {Client } = require("pg");
 const date = require('date-and-time');
-
+const request = require('request');
 const {TwitterApi} = require('twitter-api-v2');
 const CryptoJS = require('crypto-js');
 const fs = require('fs');
@@ -153,98 +153,50 @@ async function retweetUser(userData, user) {
         accessSecret: userData.accessSecret,
     });
     try{
-    let userID = await client.v2.me();
-    console.log('Bot Initialized - ID: ' + userID.data.id + ' Name: ' + userID.data.name + ' Username: ' + userID.data.username);
-    let boolFlagInt = getRandomInt(250);
-    /*if(boolFlagInt < 170) {
-        let val = await client.v2.search(userSearchList, {
-                'media.fields': 'url',
-                'tweet.fields': [
-                    'referenced_tweets', 'author_id', 'public_metrics'
-                ],
-            });
-        let tweetSend = '';
-        let randomInt = getRandomInt(val._realData.data.length);
-        let tagArray = selectTags(getRandomIntBetween(2, 4));
-        let tweetString = tagArray.join(' ');
-        let tweetText = val._realData.data[randomInt].text;
-        let externalTweetLink = 'https://twitter.com/' + val._realData.data[randomInt].author_id + '/status/' + val._realData.data[randomInt].id;
-        let boolFlagInt1 = getRandomInt(20);
-        if(boolFlagInt1 < 10) {tweetSend += externalTweetLink;}
-        else {tweetSend += tweetText;}
-        tweetSend += ' ' + tweetString;
-        let boolFlagInt2 = getRandomInt(50);
-        if(boolFlagInt2 < 10) {tweetSend += ' @BinexExchange';}
-        else if(boolFlagInt2 >= 10 && boolFlagInt2 < 20) {tweetSend += ' @AngelsOfCrypto';}
-        else if(boolFlagInt2 >= 20 && boolFlagInt2 < 30) {tweetSend += ' @RefugeLabs';}
-        else if(boolFlagInt2 >= 40) {tweetSend += ' @BinexExchange';}
-        console.log('Sending Tweet - Tweet Text: ' + tweetSend);
-        client.v2.tweet(tweetSend);
-        updateDatabase(userData.appKey, true);*/
-    //} else if (boolFlagInt > 200) {
-    if (boolFlagInt > 200) {
-        /*let timeline = await client.v2.userTimeline(ICXUserId, {
-                'media.fields': 'url',
-                'tweet.fields': [
-                    'referenced_tweets', 'author_id', 'public_metrics'
-                ],
-            });
-        let randomInt = getRandomInt(4);
-        let tagArray = selectTags(getRandomIntBetween(1, 3));
-        let tweetString = tagArray.join(' ');
-        let externalTweetLink = 'https://twitter.com/' + timeline._realData.data[randomInt].author_id + '/status/' + timeline._realData.data[randomInt].id;
-        tweetString += ' @BinexExchange ' + externalTweetLink;
-        let sentTweet = await client.v2.tweet(tweetString);
-        console.log(sentTweet);
-        updateDatabase(userData.accessToken, true);*/
-    } else if(boolFlagInt > 125) {
-        /*console.log('Starting retweet/like wash...');
-        client.v2.userTimeline(honeypotUserId, {
-        }).then((val) => {
-            let boolFlagInt5 = getRandomInt(3);
-            client.v2.retweet(userID.data.id, val._realData.data[boolFlagInt5].id)
-            client.v2.like(userID.data.id, val._realData.data[boolFlagInt5].id)
-            updateDatabase(userData.accessToken, true);
-        }).catch((err) => {
-           updateDatabase(userData.accessToken, false);
-           fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userData.appKey + '\n');
-            console.log(err)
-        })*/
-    } else if (boolFlagInt < 125) {
-        client.v2.userTimeline(ICXUserId, {
-        }).then((val) => {
+        let userID = await client.v2.me();
+        console.log('Bot Initialized - ID: ' + userID.data.id + ' Name: ' + userID.data.name + ' Username: ' + userID.data.username);
+        let boolFlagInt = getRandomInt(250);
+        if (boolFlagInt < 100) {
+            let val = await client.v2.userTimeline(ICXUserId);
             let boolFlagInt11 = getRandomInt(5);
-            client.v2.retweet(userID.data.id, val._realData.data[boolFlagInt11].id)
-            client.v2.like(userID.data.id, val._realData.data[boolFlagInt11].id)
+            console.log('Following @BinexExchange...');
+            let folVal = await client.v2.follow(userID.data.id, ICXUserId)
+            let retweetVal = await client.v2.retweet(userID.data.id, val._realData.data[boolFlagInt11].id)
+            let likeVal = await client.v2.like(userID.data.id, val._realData.data[boolFlagInt11].id)
+            console.log(folVal);
+            console.log(likeVal);
+            console.log(retweetVal);
             updateDatabase(userData.accessToken, true);
-        }).catch((err) => {
-           updateDatabase(userData.accessToken, false);
-           fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userData.appKey + '\n');
-            console.log(err)
-        })
-    }
-    //boolFlagInt = getRandomInt(100);
-    //if (boolFlagInt < 50) {
-        console.log('Starting follower wash...');
-        followerWash(client, userID.data.id, userIdList[getRandomInt(userIdList.length)]);
-    //}
-    setTimeout(() => {
-        console.log("Delayed for 30 seconds");
-    }, "30000")
+            console.log('Starting follower wash...');
+            followerWash(client, userID.data.id, userIdList[getRandomInt(userIdList.length)]);
+        } else {
 
-        /*else if(boolFlagInt10 > 50) {
-            client.v2.userTimeline(brazillianAngelUserId, {
-            }).then((val) => {
-                let boolFlagInt11 = getRandomInt(5);
-                client.v2.retweet(userID.data.id, val._realData.data[boolFlagInt11].id)
-                client.v2.like(userID.data.id, val._realData.data[boolFlagInt11].id)
-                updateDatabase(userData.appKey, true);
-            }).catch((err) => {
-               updateDatabase(userData.appKey, false);
-               fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userData.appKey + '\n');
-                console.log(err)
-            })
-        }*/
+            var category = '';
+            //var category = 'happiness';
+            request.get({
+                url: 'https://api.api-ninjas.com/v1/quotes?category=' + category,
+                    headers: {
+                        'X-Api-Key': '83fEow+gqaQodGMcy2aagQ==Ney7HG2vt4YDasfS'
+                    },
+                }, async function(error, response, body) {
+                    if(error) return console.error('Request failed:', error);
+                    else if(response.statusCode != 200) return console.error('Error:', response.statusCode, body.toString('utf8'));
+                    else {
+                        let jsonData = JSON.parse(body)
+                        console.log(jsonData[0].quote)
+                        let newTweet = await client.v2.tweet(jsonData[0].quote);
+                        console.log(newTweet);
+                    }
+            });
+
+/*            let quoteData = await fetch("https://type.fit/api/quotes")
+            let quoteJson = await quoteData.json();
+            let randomInt = getRandomInt(quoteJson.length)
+            let tweetText = quoteJson[randomInt].text;
+            let newTweet = await client.v2.tweet(tweetText);*/
+            //console.log(newTweet);
+            updateDatabase(userData.accessToken, true);
+        }
     } catch(err) {
         updateDatabase(userData.accessToken, false);
         fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userData.appKey + '\n');
@@ -254,25 +206,9 @@ async function retweetUser(userData, user) {
 async function followerWash(client, ownUserId, otherUserId) {
     try{
     let randomInt = getRandomInt(100);
-    if(true){
-    //if(randomInt >= 50) {
+    if(randomInt >= 50){
         console.log('Starting Add Followers...');
         var otherFollowersArray = [];
-        //let otherData = await client.v2.user(otherUserId, {'user.fields': 'public_metrics'});
-        //console.log(otherData);
-        //let upperLimit = 15;
-        //if(Math.floor(otherData.data.public_metrics.followers_count / 1000) < upperLimit) {
-        //    upperLimit = Math.floor(otherData.data.public_metrics.followers_count / 1000);
-        //}
-        //let modRandomInt = getRandomIntBetween(1, upperLimit);
-        //let otherFollowers = await client.v2.followers(otherUserId, { max_results: 1000 });
-        //console.log(otherFollowers);
-        //console.log('Before Add Followers Loop... Upper Limit: ' + upperLimit + ' ModRandomInt: ' + modRandomInt);
-        //otherFollowersArray = await otherFollowers.data;
-        //console.log(otherFollowersArray);
-        //if(modRandomInt == 0) {
-        //    addFollowers(client, ownUserId, otherUserId, otherFollowersArray);
-        //} else {
         const dbClient = new Client({
             connectionString: databaseUrl,
             application_name: "$ docs_quickstart_node"
@@ -282,42 +218,10 @@ async function followerWash(client, ownUserId, otherUserId) {
         let statement = "SELECT * FROM follower_list_data"
         let result = await dbClient.query(statement);
         if (result.rowCount > 0) {
-            //let randAmount = getRandomIntBetween(1000, 4000);
-            //for(let i = 0; i < randAmount; i++) {
-            //    otherFollowersArray.push(result.rows[getRandomInt(result.rowCount)].id)
-            //    if(i >= (randAmount - 1)) {
-            //        console.log(otherFollowersArray);
-                    quoteTweetLargeUser(client, ownUserId, otherUserId, result.rows);
-                    addFollowers(client, ownUserId, otherUserId, result.rows);
-            //    }
-                //console.log('API Key: ' + result.rows[i].apikey + ' Active: ' + result.rows[i].active + ' Timestamp: ' + date.format(result.rows[i].timestamp,'DD/MM/YYYY HH:mm:ss'));
-            //}
+            quoteTweetLargeUser(client, ownUserId, otherUserId, result.rows);
+            addFollowers(client, ownUserId, otherUserId, result.rows);
         }
         await dbClient.end();
-
-         /*   for(let x = 0; x < modRandomInt; x++) {
-                 try{
-                 console.log('Starting Add Followers Loop...');
-//                    getNextFollowerList(client, ownUserId, otherUserId, otherFollowersArray, addArray, randomFollowerIndex);
-                 setTimeout(async () => {
-                     try{
-                     console.log('Inside timeout function add followers: ' + x);
-                     otherFollowers = await client.v2.followers(otherUserId, { max_results: 1000 , pagination_token: otherFollowers.meta.next_token});
-                     otherFollowersArray = otherFollowersArray.concat(otherFollowers.data);
-                     if(x == (modRandomInt - 1)) {
-                         quoteTweetLargeUser(client, ownUserId, otherUserId, otherFollowersArray);
-                         addFollowers(client, ownUserId, otherUserId, otherFollowersArray);
-                     }
-                     }catch(err) {
-                         console.log(err);
-                     }
-                 //}, 20000 * x)
-                 }, 200000 * x)
-                 }catch(err) {
-                     console.log(err);
-                 }
-            }*/
-        //}
     } else {
         console.log('Starting Remove Followers...');
         var ownFollowersArray = [];
@@ -359,22 +263,6 @@ async function addFollowers(client, ownUserId, otherUserId, otherFollowersArray)
             if(addArray.includes(otherFollowersArray[randomFollowerIndex].id)) {
                 i--;
             } else {
-                /*addArray.push(otherFollowersArray[randomFollowerIndex].id);
-                let response = await client.v2.follow(ownUserId, otherFollowersArray[randomFollowerIndex].id);
-                console.log('Adding Follower - ' + otherFollowersArray[randomFollowerIndex].id);
-                console.log(response);
-
-                //setTimeout(() => {
-                let timeline = await client.v2.userTimeline(otherFollowersArray[randomFollowerIndex].id);
-                console.log(timeline);
-                if(timeline._realData.data) {
-                    let upperIndex = 3;
-                    if(timeline._realData.data.length < 3) { upperIndex = timeline._realData.data.length; }
-                    let randomTweetIndex = getRandomInt(upperIndex);
-                    let timelineLike = await client.v2.like(ownUserId, timeline._realData.data[randomTweetIndex].id);
-                    console.log(timelineLike);
-                }
-                //}, 1000 * i)*/
                 setTimeout(() => {
                     sendAddFollowerRequest(client, ownUserId, otherUserId, otherFollowersArray, addArray, randomFollowerIndex);
                 }, 200000 * i)
@@ -412,15 +300,9 @@ async function removeFollowers(client, ownUserId, ownFollowersArray) {
         console.log('ownFollowersArray Size: ' + ownFollowersArray.length + ' removalArray Size: ' + arraySize);
         for(let i = 0; i < arraySize; i++) {
             let randomFollowerIndex = getRandomInt(ownFollowersArray.length)
-            if(removalArray.includes(ownFollowersArray[randomFollowerIndex].id)) {
+            if(removalArray.includes(ownFollowersArray[randomFollowerIndex].id) || ownFollowersArray[randomFollowerIndex].id == ICXUserId) {
                 i--;
             } else {
-                /*removalArray.push(ownFollowersArray[randomFollowerIndex].id);
-                //setTimeout(() => {
-                let response = await client.v2.unfollow(ownUserId, ownFollowersArray[randomFollowerIndex].id);
-                console.log('Removing Follower - ' + ownFollowersArray[randomFollowerIndex].id);
-                console.log(response);
-                //}, 1000 * i)*/
                 setTimeout(() => {
                     sendRemoveFollowerRequest(client, ownUserId, ownFollowersArray, removalArray, randomFollowerIndex);
                 }, 200000 * i)
@@ -517,13 +399,6 @@ async function updateDatabase(apiKey, isActive) {
         statement = "INSERT INTO account_tracking (active, apikey) VALUES (" + isActive + ", '" + apiKey + "')";
         result = await client.query(statement);
     }
-    /*statement = "SELECT * FROM account_tracking"
-    result = await client.query(statement);
-    if (result.rowCount > 0) {
-        for(let i = 0; i < result.rows.length; i++) {
-           console.log('API Key: ' + result.rows[i].apikey + ' Active: ' + result.rows[i].active + ' Timestamp: ' + date.format(result.rows[i].timestamp,'DD/MM/YYYY HH:mm:ss'));
-        }
-    }*/
     await client.end();
   } catch (err) {
     console.log(`error connecting: ${err}`);
