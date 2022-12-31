@@ -184,8 +184,12 @@ async function retweetUser(userData, user) {
                     else {
                         let jsonData = JSON.parse(body)
                         console.log(jsonData[0].quote)
-                        let newTweet = await client.v2.tweet(jsonData[0].quote);
-                        console.log(newTweet);
+                        var tweetText;
+                        var r = request('https://bot.uniqued.io/image.html', async function (err, res, body) {
+                            tweetText = jsonData[0].quote + ' ' + r.uri.href;
+                            let newTweet = await client.v2.tweet(tweetText);
+                            console.log(newTweet);
+                        })
                     }
             });
 
