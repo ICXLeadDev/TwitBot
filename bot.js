@@ -156,7 +156,7 @@ async function retweetUser(userData, user) {
         let userID = await client.v2.me();
         console.log('Bot Initialized - ID: ' + userID.data.id + ' Name: ' + userID.data.name + ' Username: ' + userID.data.username);
         let boolFlagInt = getRandomInt(250);
-        if (boolFlagInt < 100) {
+        if (boolFlagInt < 25) {
             let val = await client.v2.userTimeline(ICXUserId);
             let boolFlagInt11 = getRandomInt(5);
             console.log('Following @BinexExchange...');
@@ -168,7 +168,7 @@ async function retweetUser(userData, user) {
             console.log(retweetVal);
             updateDatabase(userData.accessToken, true);
             console.log('Starting follower wash...');
-            followerWash(client, userID.data.id, userIdList[getRandomInt(userIdList.length)]);
+            //followerWash(client, userID.data.id, userIdList[getRandomInt(userIdList.length)]);
         } else {
 
             var category = '';
