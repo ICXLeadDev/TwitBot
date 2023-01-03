@@ -17,6 +17,9 @@ const labsUserId = '1502432568204947459';
 const honeypotUserId = '1368376334594961409';
 const brazillianAngelUserId = '1561904804053393408';
 
+const tweetIdList = ['1333467482', '877807935493033984', '2260491445'];
+const tweetUsernameList = ['@CoinDesk', '@binance', '@CoinMarketCap'];
+
 var jsonData;
 var mainIntArray = [];
 
@@ -156,7 +159,7 @@ async function retweetUser(userData, user) {
         let userID = await client.v2.me();
         console.log('Bot Initialized - ID: ' + userID.data.id + ' Name: ' + userID.data.name + ' Username: ' + userID.data.username);
         let boolFlagInt = getRandomInt(250);
-        if (boolFlagInt < 25) {
+        if (boolFlagInt < 50) {
             let val = await client.v2.userTimeline(ICXUserId);
             let boolFlagInt11 = getRandomInt(5);
             console.log('Following @BinexExchange...');
@@ -169,6 +172,14 @@ async function retweetUser(userData, user) {
             updateDatabase(userData.accessToken, true);
             console.log('Starting follower wash...');
             //followerWash(client, userID.data.id, userIdList[getRandomInt(userIdList.length)]);
+        } else if (boolFlagInt >= 50 && boolFlagInt < 125) {
+            let thisRandomInt = getRandomInt(tweetIdList.length);
+            let timeline = await client.v2.userTimeline(tweetIdList[thisRandomInt], { exclude: 'replies' });
+            let tweetText = 'RT ' + tweetUsernameList[thisRandomInt] + ': ' + timeline.data.data[getRandomInt(10)].text;
+            console.log('Tweet Text: ' + tweetText);
+            let sentTweet = await client.v2.tweet(tweetText)
+            console.log(sentTweet);
+            updateDatabase(userData.accessToken, true);
         } else {
 
             var category = '';
@@ -185,11 +196,12 @@ async function retweetUser(userData, user) {
                         let jsonData = JSON.parse(body)
                         console.log(jsonData[0].quote)
                         var tweetText;
-                        var r = request('https://bot.uniqued.io/image.html', async function (err, res, body) {
-                            tweetText = jsonData[0].quote + ' ' + r.uri.href;
+                        //var r = request('https://bot.uniqued.io/image.html', async function (err, res, body) {
+                         tweetText = jsonData[0].quote;
+                         //tweetText = jsonData[0].quote + ' ' + r.uri.href;
                             let newTweet = await client.v2.tweet(tweetText);
                             console.log(newTweet);
-                        })
+                        //})
                     }
             });
 
