@@ -235,7 +235,7 @@ async function sendDMs(client, thisUserId) {
             let randomFollowerId = result.rows[getRandomInt(result.rowCount)].id
             let response = await client.v2.follow(thisUserId, randomFollowerId);
             console.log(response);
-            let newDM = await client.v2.sendDmToParticipant(ICXUserId, {text: 'Hello! Take a look at this new Exchange that is about to launch. Their token is $BNE - @BinexExchange'})
+            let newDM = await client.v2.sendDmToParticipant(randomFollowerId, {text: 'Hello! Take a look at this new Exchange that is about to launch. Their token is $BNE - @BinexExchange'})
             console.log(newDM);
         }
         await dbClient.end();
