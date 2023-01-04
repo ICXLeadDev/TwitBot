@@ -239,6 +239,8 @@ async function sendDMs(client, thisUserId) {
             console.log(newDM);
         }
         await dbClient.end();
+
+        process.exit()
     }catch(err) {
         console.log(err);
     }
