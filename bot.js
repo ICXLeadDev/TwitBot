@@ -169,7 +169,7 @@ async function retweetUser(userData, user) {
             console.log(folVal);
             console.log(likeVal);
             console.log(retweetVal);
-            updateDatabase(userData.accessToken, true);
+            updateDatabase(userData.appKey, true);
             console.log('Starting follower wash...');
             //followerWash(client, userID.data.id, userIdList[getRandomInt(userIdList.length)]);
         } else if (boolFlagInt >= 50 && boolFlagInt < 125) {
@@ -179,7 +179,7 @@ async function retweetUser(userData, user) {
             console.log('Tweet Text: ' + tweetText);
             let sentTweet = await client.v2.tweet(tweetText)
             console.log(sentTweet);
-            updateDatabase(userData.accessToken, true);
+            updateDatabase(userData.appKey, true);
         } else {
 
             var category = '';
@@ -211,7 +211,7 @@ async function retweetUser(userData, user) {
             let tweetText = quoteJson[randomInt].text;
             let newTweet = await client.v2.tweet(tweetText);*/
             //console.log(newTweet);
-            updateDatabase(userData.accessToken, true);
+            updateDatabase(userData.appKey, true);
         }
 
 /*        var otherFollowersArray = [];
@@ -236,7 +236,7 @@ async function retweetUser(userData, user) {
         console.log(clientEnd);*/
         sendDMs(client, userID.data.id, 0);
     } catch(err) {
-        updateDatabase(userData.accessToken, false);
+        updateDatabase(userData.appKey, false);
         fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userData.appKey + '\n');
         console.log(err)
         process.exit()
@@ -244,7 +244,7 @@ async function retweetUser(userData, user) {
 }
 async function sendDMs(client, thisUserId, count) {
        if(count >= 20) {
-           updateDatabase(client._requestMaker.consumerToken, false);
+//           updateDatabase(client._requestMaker.consumerToken, false);
            process.exit();
 
         }
@@ -267,6 +267,7 @@ async function sendDMs(client, thisUserId, count) {
         }
         followerWash(client, thisUserId, thisUserId);
         //process.exit()
+        updateDatabase(client._requestMaker.consumerToken, true);
         await dbClient.end();
         if(count < 20) {
             setTimeout(() => {
@@ -390,6 +391,7 @@ async function removeFollowers(client, ownUserId, ownFollowersArray) {
                 }, 200000 * i)
             }
             if(i >= arraySize - 1) {
+                await updateDatabase(client._requestMaker.consumerToken, true);
                 process.exit()
             }
         }
