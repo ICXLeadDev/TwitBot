@@ -231,6 +231,7 @@ async function retweetUser(userData, user) {
             console.log(newDM);
         }
         console.log('Ending client....');
+        process.exit()
         let clientEnd = await dbClient.end();
         console.log(clientEnd);
         //sendDMs(client, userID.data.id);
@@ -238,6 +239,7 @@ async function retweetUser(userData, user) {
         updateDatabase(userData.accessToken, false);
         fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userData.appKey + '\n');
         console.log(err)
+        process.exit()
     }
 }
 async function sendDMs(client, thisUserId) {
