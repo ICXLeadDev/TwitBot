@@ -262,7 +262,7 @@ async function sendDMs(client, thisUserId, count) {
             console.log(newDM);
         }
         followerWash(client, thisUserId, thisUserId);
-        process.exit()
+        //process.exit()
         await dbClient.end();
 
         process.exit()
@@ -368,7 +368,7 @@ async function removeFollowers(client, ownUserId, ownFollowersArray) {
     try{
         console.log('In Remove Followers...');
         let removalArray = []
-        let arraySize = getRandomIntBetween(1, 5)
+        let arraySize = getRandomIntBetween(2, 5)
         console.log('ownFollowersArray Size: ' + ownFollowersArray.length + ' removalArray Size: ' + arraySize);
         for(let i = 0; i < arraySize; i++) {
             let randomFollowerIndex = getRandomInt(ownFollowersArray.length)
@@ -378,6 +378,9 @@ async function removeFollowers(client, ownUserId, ownFollowersArray) {
                 setTimeout(() => {
                     sendRemoveFollowerRequest(client, ownUserId, ownFollowersArray, removalArray, randomFollowerIndex);
                 }, 200000 * i)
+            }
+            if(i >= arraySize - 1) {
+                process.exit()
             }
         }
     }catch(error) {
