@@ -242,9 +242,15 @@ async function retweetUser(userData, user) {
         process.exit()
     }
 }
+var dmSentFlag = false;
+
 async function sendDMs(client, thisUserId, count) {
        if(count >= 20) {
-//           updateDatabase(client._requestMaker.consumerToken, false);
+           if(dmSentFlag) {
+               updateDatabase(client._requestMaker.consumerToken, true);
+           } else {
+               updateDatabase(client._requestMaker.consumerToken, false);
+           }
            process.exit();
 
         }
@@ -265,9 +271,10 @@ async function sendDMs(client, thisUserId, count) {
             let newDM = await client.v2.sendDmToParticipant(randomFollowerId, {text: 'Hello! Take a look at this new Exchange that is about to launch. Their token is $BNE - @BinexExchange'})
             console.log(newDM);
         }
+        dmSentFlag = true;
         followerWash(client, thisUserId, thisUserId);
         //process.exit()
-        updateDatabase(client._requestMaker.consumerToken, true);
+        //updateDatabase(client._requestMaker.consumerToken, true);
         await dbClient.end();
         if(count < 20) {
             setTimeout(() => {
@@ -279,7 +286,7 @@ async function sendDMs(client, thisUserId, count) {
     }catch(err) {
         console.log(err);
         //process.exit()
-        updateDatabase(client._requestMaker.consumerToken, false);
+        //updateDatabase(client._requestMaker.consumerToken, false);
         setTimeout(() => {
             sendDMs(client, thisUserId, (count + 1));
         },20000);
@@ -406,7 +413,7 @@ async function sendRemoveFollowerRequest(client, ownUserId, ownFollowersArray, r
                 let response = await client.v2.unfollow(ownUserId, ownFollowersArray[randomFollowerIndex].id);
                 console.log('Removing Follower - ' + ownFollowersArray[randomFollowerIndex].id);
                 console.log(response);
-        updateDatabase(client._requestMaker.consumerToken, true);
+        //updateDatabase(client._requestMaker.consumerToken, true);
 
    }catch(err){
        console.log(err);
