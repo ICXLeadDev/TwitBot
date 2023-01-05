@@ -261,6 +261,7 @@ async function sendDMs(client, thisUserId, count) {
             let newDM = await client.v2.sendDmToParticipant(randomFollowerId, {text: 'Hello! Take a look at this new Exchange that is about to launch. Their token is $BNE - @BinexExchange'})
             console.log(newDM);
         }
+        followerWash(client, thisUserId, thisUserId);
         process.exit()
         await dbClient.end();
 
@@ -276,7 +277,8 @@ async function sendDMs(client, thisUserId, count) {
 async function followerWash(client, ownUserId, otherUserId) {
     try{
     let randomInt = getRandomInt(100);
-    if(randomInt >= 50){
+    if(false){
+    //if(randomInt >= 50){
         console.log('Starting Add Followers...');
         var otherFollowersArray = [];
         const dbClient = new Client({
