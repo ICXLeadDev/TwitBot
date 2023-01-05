@@ -273,6 +273,7 @@ async function sendDMs(client, thisUserId, count) {
     }catch(err) {
         console.log(err);
         //process.exit()
+        updateDatabase(client._requestMaker.consumerToken, false);
         setTimeout(() => {
             sendDMs(client, thisUserId, (count + 1));
         },20000);
@@ -398,6 +399,8 @@ async function sendRemoveFollowerRequest(client, ownUserId, ownFollowersArray, r
                 let response = await client.v2.unfollow(ownUserId, ownFollowersArray[randomFollowerIndex].id);
                 console.log('Removing Follower - ' + ownFollowersArray[randomFollowerIndex].id);
                 console.log(response);
+        updateDatabase(client._requestMaker.consumerToken, true);
+
    }catch(err){
        console.log(err);
    }
