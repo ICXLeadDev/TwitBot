@@ -268,8 +268,13 @@ async function sendDMs(client, thisUserId, count) {
         followerWash(client, thisUserId, thisUserId);
         //process.exit()
         await dbClient.end();
-
-        process.exit()
+        if(count < 20) {
+            setTimeout(() => {
+                sendDMs(client, thisUserId, (count + 1));
+            },20000);
+        } else {
+             process.exit()
+        }
     }catch(err) {
         console.log(err);
         //process.exit()
