@@ -214,7 +214,7 @@ async function retweetUser(userData, user) {
             updateDatabase(userData.accessToken, true);
         }
 
-        var otherFollowersArray = [];
+/*        var otherFollowersArray = [];
         const dbClient = new Client({
             connectionString: databaseUrl,
             application_name: "$ docs_quickstart_node"
@@ -233,8 +233,8 @@ async function retweetUser(userData, user) {
         console.log('Ending client....');
         process.exit()
         let clientEnd = await dbClient.end();
-        console.log(clientEnd);
-        //sendDMs(client, userID.data.id);
+        console.log(clientEnd);*/
+        sendDMs(client, userID.data.id, 0);
     } catch(err) {
         updateDatabase(userData.accessToken, false);
         fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userData.appKey + '\n');
@@ -242,7 +242,8 @@ async function retweetUser(userData, user) {
         process.exit()
     }
 }
-async function sendDMs(client, thisUserId) {
+async function sendDMs(client, thisUserId, count) {
+       if(count >= 20) {process.exit();}
     try{
         var otherFollowersArray = [];
         const dbClient = new Client({
@@ -260,11 +261,16 @@ async function sendDMs(client, thisUserId) {
             let newDM = await client.v2.sendDmToParticipant(randomFollowerId, {text: 'Hello! Take a look at this new Exchange that is about to launch. Their token is $BNE - @BinexExchange'})
             console.log(newDM);
         }
+        process.exit()
         await dbClient.end();
 
         process.exit()
     }catch(err) {
         console.log(err);
+        //process.exit()
+        setTimeout(() => {
+            sendDMs(client, thisUserId, (count + 1));
+        },20000);
     }
 }
 async function followerWash(client, ownUserId, otherUserId) {
