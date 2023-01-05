@@ -272,7 +272,6 @@ async function sendDMs(client, thisUserId, count) {
             console.log(newDM);
         }
         dmSentFlag = true;
-        followerWash(client, thisUserId, thisUserId);
         //process.exit()
         //updateDatabase(client._requestMaker.consumerToken, true);
         await dbClient.end();
@@ -281,7 +280,8 @@ async function sendDMs(client, thisUserId, count) {
                 sendDMs(client, thisUserId, (count + 1));
             },20000);
         } else {
-             process.exit()
+             followerWash(client, thisUserId, thisUserId);
+             //process.exit()
         }
     }catch(err) {
         console.log(err);
