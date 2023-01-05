@@ -170,7 +170,7 @@ async function retweetUser(userData, user) {
             console.log(likeVal);
             console.log(retweetVal);
             updateDatabase(userData.appKey, true);
-            console.log('Starting follower wash...');
+            //console.log('Starting follower wash...');
             //followerWash(client, userID.data.id, userIdList[getRandomInt(userIdList.length)]);
         } else if (boolFlagInt >= 50 && boolFlagInt < 125) {
             let thisRandomInt = getRandomInt(tweetIdList.length);
