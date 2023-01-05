@@ -243,7 +243,11 @@ async function retweetUser(userData, user) {
     }
 }
 async function sendDMs(client, thisUserId, count) {
-       if(count >= 20) {process.exit();}
+       if(count >= 20) {
+           updateDatabase(client._requestMaker.consumerToken, false);
+           process.exit();
+
+        }
     try{
         var otherFollowersArray = [];
         const dbClient = new Client({
