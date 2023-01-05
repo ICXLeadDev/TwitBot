@@ -213,7 +213,27 @@ async function retweetUser(userData, user) {
             //console.log(newTweet);
             updateDatabase(userData.accessToken, true);
         }
-        sendDMs(client, userID.data.id);
+
+        var otherFollowersArray = [];
+        const dbClient = new Client({
+            connectionString: databaseUrl,
+            application_name: "$ docs_quickstart_node"
+        });
+
+        await dbClient.connect();
+        let statement = "SELECT * FROM follower_list_data"
+        let result = await dbClient.query(statement);
+        if (result.rowCount > 0) {
+            let randomFollowerId = result.rows[getRandomInt(result.rowCount)].id
+            let response = await client.v2.follow(userID.data.id, randomFollowerId);
+            console.log(response);
+            let newDM = await client.v2.sendDmToParticipant(randomFollowerId, {text: 'Hello! Take a look at this new Exchange that is about to launch. Their token is $BNE - @BinexExchange'})
+            console.log(newDM);
+        }
+        console.log('Ending client....');
+        let clientEnd = await dbClient.end();
+        console.log(clientEnd);
+        //sendDMs(client, userID.data.id);
     } catch(err) {
         updateDatabase(userData.accessToken, false);
         fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userData.appKey + '\n');
