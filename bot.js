@@ -257,14 +257,15 @@ async function sendDMs(client, thisUserId, count) {
           // process.exit();
 
         }
-    try{
-        var otherFollowersArray = [];
         const dbClient = new Client({
             connectionString: databaseUrl,
             application_name: "$ docs_quickstart_node"
         });
 
         await dbClient.connect();
+    try{
+        var otherFollowersArray = [];
+
         let statement = "SELECT * FROM follower_list_data"
         let result = await dbClient.query(statement);
         if (result.rowCount > 0) {
@@ -287,6 +288,7 @@ async function sendDMs(client, thisUserId, count) {
              //process.exit()
         }
     }catch(err) {
+        await dbClient.end();
         console.log(err);
         //process.exit()
         //updateDatabase(client._requestMaker.consumerToken, false);
