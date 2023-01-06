@@ -245,13 +245,13 @@ async function retweetUser(userData, user) {
 var dmSentFlag = false;
 
 async function sendDMs(client, thisUserId, count) {
-       if(count >= 20) {
+       if(count > 20) {
            if(dmSentFlag) {
-               updateDatabase(client._requestMaker.consumerToken, true);
+               let databaseUpdate = await updateDatabase(client._requestMaker.consumerToken, true);
                process.exit()
 
            } else {
-               updateDatabase(client._requestMaker.consumerToken, false);
+               //updateDatabase(client._requestMaker.consumerToken, false);
                process.exit()
            }
           // process.exit();
@@ -276,8 +276,6 @@ async function sendDMs(client, thisUserId, count) {
             console.log(newDM);
             dmSentFlag = true;
         }
-        //process.exit()
-        //updateDatabase(client._requestMaker.consumerToken, true);
         await dbClient.end();
         if(count < 20) {
             setTimeout(() => {
@@ -285,16 +283,50 @@ async function sendDMs(client, thisUserId, count) {
             },20000);
         } else {
              followerWash(client, thisUserId, thisUserId);
-             //process.exit()
         }
     }catch(err) {
         await dbClient.end();
-        console.log(err);
-        //process.exit()
+        let responseMessage = err.data.detail;
+        if(responseMessage.includes("DM")) {
+            setTimeout(() => {
+                sendDMs(client, thisUserId, (count + 1));
+            },20000);
+        } else if(responseMessage.includes("many")) {
+        } else {
+            console.log("Account might be frozen...");
+            let databaseUpdate = await updateDatabase(client._requestMaker.consumerToken, false);
+        }
+        console.log(err.data.detail);
+    }
+}
+async function followerRemove(client, ownUserId, otherUserId) {
+    try{
+        console.log('Starting Remove Followers...');
+        var ownFollowersArray = [];
+        let selfData = await client.v2.user(ownUserId, {'user.fields': 'public_metrics'});
+        let upperLimit = 5;
+        if(Math.floor(selfData.data.public_metrics.following_count / 1000) < upperLimit) {
+            upperLimit = Math.floor(selfData.data.public_metrics.following_count / 1000);
+        }
+        let modRandomInt = getRandomIntBetween(1, upperLimit);
+        let ownFollowers = await client.v2.following(ownUserId, { max_results: 1000 });
+        console.log(ownFollowers);
+        console.log('Before Remove Followers Loop... Upper Limit: ' + upperLimit + ' ModRandomInt: ' + modRandomInt);
+        ownFollowersArray = await ownFollowers.data;
+        console.log(ownFollowersArray);
+        if(modRandomInt == 0) {
+            removeFollowers(client, ownUserId, ownFollowersArray);
+        } else {
+            for(let x = 0; x < modRandomInt; x++) {
+                 console.log('Starting Remove Followers Loop...');
+                 ownFollowers = await client.v2.following(ownUserId, { max_results: 1000 , pagination_token: ownFollowers.meta.next_token});
+                 ownFollowersArray = ownFollowersArray.concat(ownFollowers.data);
+                 if(x == (modRandomInt - 1)) {removeFollowers(client, ownUserId, ownFollowersArray);}
+            }
+        }
+    }catch(error) {
         //updateDatabase(client._requestMaker.consumerToken, false);
-        setTimeout(() => {
-            sendDMs(client, thisUserId, (count + 1));
-        },20000);
+        console.log(error);
     }
 }
 async function followerWash(client, ownUserId, otherUserId) {
@@ -501,7 +533,9 @@ async function updateDatabase(apiKey, isActive) {
         result = await client.query(statement);
     }
     await client.end();
+    return true;
   } catch (err) {
     console.log(`error connecting: ${err}`);
+    return false;
   }
 }
