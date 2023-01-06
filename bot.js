@@ -239,7 +239,7 @@ async function retweetUser(userData, user) {
         updateDatabase(userData.appKey, false);
         fs.appendFileSync('/home/botcontroller1/TwitBot/accountFailures.log', userData.appKey + '\n');
         console.log(err)
-        process.exit()
+        //process.exit()
     }
 }
 var dmSentFlag = false;
@@ -248,10 +248,13 @@ async function sendDMs(client, thisUserId, count) {
        if(count >= 20) {
            if(dmSentFlag) {
                updateDatabase(client._requestMaker.consumerToken, true);
+               process.exit()
+
            } else {
                updateDatabase(client._requestMaker.consumerToken, false);
+               process.exit()
            }
-           process.exit();
+          // process.exit();
 
         }
     try{
@@ -270,8 +273,8 @@ async function sendDMs(client, thisUserId, count) {
             console.log(response);
             let newDM = await client.v2.sendDmToParticipant(randomFollowerId, {text: 'Hello! Take a look at this new Exchange that is about to launch. Their token is $BNE - @BinexExchange'})
             console.log(newDM);
+            dmSentFlag = true;
         }
-        dmSentFlag = true;
         //process.exit()
         //updateDatabase(client._requestMaker.consumerToken, true);
         await dbClient.end();
