@@ -292,7 +292,7 @@ async function sendDMs(client, thisUserId, count) {
                 sendDMs(client, thisUserId, (count + 1));
             },20000);
         } else if(responseMessage.includes("many")) {
-        } else {
+        } else if(responseMessage.includes("locked"){
             console.log("Account might be frozen...");
             let databaseUpdate = await updateDatabase(client._requestMaker.consumerToken, false);
         }
