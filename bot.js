@@ -243,6 +243,7 @@ async function retweetUser(userData, user) {
     }
 }
 var dmSentFlag = false;
+var otherFollowersArray = [];
 
 async function sendDMs(client, thisUserId, count) {
        if(count > 20) {
@@ -264,18 +265,25 @@ async function sendDMs(client, thisUserId, count) {
 
         await dbClient.connect();
     try{
-        var otherFollowersArray = [];
+        var result;
+        if(otherFollowersArray.length == 0) {
 
-        let statement = "SELECT * FROM follower_list_data"
-        let result = await dbClient.query(statement);
-        if (result.rowCount > 0) {
-            let randomFollowerId = result.rows[getRandomInt(result.rowCount)].id
-            let response = await client.v2.follow(thisUserId, randomFollowerId);
-            console.log(response);
-            let newDM = await client.v2.sendDmToParticipant(randomFollowerId, {text: 'Hello! Take a look at this new Exchange that is about to launch. Their token is $BNE - @BinexExchange'})
-            console.log(newDM);
-            dmSentFlag = true;
-        }
+            let statement = "SELECT * FROM follower_list_data"
+            result = await dbClient.query(statement);
+            if (result.rowCount > 0) {
+                otherFollowersArray = result.rows;
+            }
+            await dbClient.end();
+            sendDMs(client, thisUserId, count);
+        } else {
+        //console.log(otherFollowersArray);
+        let randomFollowerId = await otherFollowersArray[getRandomInt(otherFollowersArray.length)].id
+        let response = await client.v2.follow(thisUserId, randomFollowerId);
+        console.log(response);
+        let newDM = await client.v2.sendDmToParticipant(randomFollowerId, {text: 'Hello! Take a look at this new Exchange that is about to launch. Their token is $BNE - @BinexExchange'})
+        console.log(newDM);
+        dmSentFlag = true;
+        //}
         await dbClient.end();
         if(count < 20) {
             setTimeout(() => {
@@ -284,14 +292,15 @@ async function sendDMs(client, thisUserId, count) {
         } else {
              followerWash(client, thisUserId, thisUserId);
         }
+    }
     }catch(err) {
-        await dbClient.end();
+        console.log(err);
         let responseMessage = err.data.detail;
         if(responseMessage.includes("DM")) {
             setTimeout(() => {
                 sendDMs(client, thisUserId, (count + 1));
             },20000);
-        } else if(responseMessage.includes("many")) {
+        } else if(responseMessage.includes("Many")) {
         } else if(responseMessage.includes("locked")){
             console.log("Account might be frozen...");
             let databaseUpdate = await updateDatabase(client._requestMaker.consumerToken, false);
