@@ -290,7 +290,8 @@ async function sendDMs(client, thisUserId, count) {
                 sendDMs(client, thisUserId, (count + 1));
             },20000);
         } else {
-             followerWash(client, thisUserId, thisUserId);
+             process.exit()
+             //followerWash(client, thisUserId, thisUserId);
         }
     }
     }catch(err) {
