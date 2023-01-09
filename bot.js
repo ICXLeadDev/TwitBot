@@ -284,7 +284,7 @@ async function sendDMs(client, thisUserId, count) {
         console.log(newDM);
         dmSentFlag = true;
         //}
-        await dbClient.end();
+        //await dbClient.end();
         if(count < 20) {
             setTimeout(() => {
                 sendDMs(client, thisUserId, (count + 1));
@@ -304,6 +304,7 @@ async function sendDMs(client, thisUserId, count) {
         } else if(responseMessage.includes("locked")){
             console.log("Account might be frozen...");
             let databaseUpdate = await updateDatabase(client._requestMaker.consumerToken, false);
+            process.exit()
         }
         console.log(err.data.detail);
     }
