@@ -246,7 +246,7 @@ var dmSentFlag = false;
 var otherFollowersArray = [];
 
 async function sendDMs(client, thisUserId, count) {
-       if(count > 20) {
+       if(count > 10) {
            if(dmSentFlag) {
                let databaseUpdate = await updateDatabase(client._requestMaker.consumerToken, true);
                process.exit()
@@ -285,7 +285,7 @@ async function sendDMs(client, thisUserId, count) {
         dmSentFlag = true;
         //}
         //await dbClient.end();
-        if(count < 20) {
+        if(count < 10) {
             setTimeout(() => {
                 sendDMs(client, thisUserId, (count + 1));
             },20000);
