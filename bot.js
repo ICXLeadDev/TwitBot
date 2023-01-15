@@ -246,7 +246,7 @@ var dmSentFlag = false;
 var otherFollowersArray = [];
 
 async function sendDMs(client, thisUserId, count) {
-       if(count > 10) {
+       if(count > 10 || dmSentFlag) {
            if(dmSentFlag) {
                let databaseUpdate = await updateDatabase(client._requestMaker.consumerToken, true);
                process.exit()
@@ -280,7 +280,7 @@ async function sendDMs(client, thisUserId, count) {
         let randomFollowerId = await otherFollowersArray[getRandomInt(otherFollowersArray.length)].id
         let response = await client.v2.follow(thisUserId, randomFollowerId);
         console.log(response);
-        let newDM = await client.v2.sendDmToParticipant(randomFollowerId, {text: 'Hello! Take a look at this new Exchange that is about to launch. Their token is $BNE - @BinexExchange'})
+        let newDM = await client.v2.sendDmToParticipant(randomFollowerId, {text: 'This new Exchange that is about to launch is focusing completely on transparency and security, like what I see! Their token is $BNE - @BinexExchange'})
         console.log(newDM);
         dmSentFlag = true;
         //}
