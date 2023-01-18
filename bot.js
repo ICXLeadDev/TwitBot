@@ -17,8 +17,8 @@ const labsUserId = '1502432568204947459';
 const honeypotUserId = '1368376334594961409';
 const brazillianAngelUserId = '1561904804053393408';
 
-const tweetIdList = ['1333467482', '877807935493033984', '2260491445'];
-const tweetUsernameList = ['@CoinDesk', '@binance', '@CoinMarketCap'];
+const tweetIdList = ['1333467482', '877807935493033984', '2260491445', '954005112174862336', '1150790822813560833', '897446848004227072', '899558268795842561'];
+const tweetUsernameList = ['@CoinDesk', '@binance', '@CoinMarketCap', '@Bitboy_Crypto', '@girlgone_crypto', '@crypto_birb', '@CryptoCred'];
 
 var jsonData;
 var mainIntArray = [];
